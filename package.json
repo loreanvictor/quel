@@ -1,8 +1,10 @@
 {
   "name": "quel",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Expression-based reactive library for hot listenables",
   "main": "dist/commonjs/index.js",
+  "module": "dist/es6/index.js",
+  "types": "dist/es6/index.d.ts",
   "scripts": {
     "sample": "vite sample",
     "test": "jest",
@@ -12,6 +14,11 @@
     "build": "npm run build-commonjs && npm run build-es",
     "prepack": "npm run build"
   },
+  "files": [
+    "dist/es6",
+    "dist/commonjs"
+  ],
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/loreanvictor/quel.git"
