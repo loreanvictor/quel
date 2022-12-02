@@ -80,7 +80,7 @@ observe($ => {
 
 ## Why?
 
-⚡ [**quel**](.) has a small API surface (~1KB minzipped), allowing you to do complex stuff intuitively and imperatively:
+⚡ [**quel**](.) has a minimal API surface, allowing you to do complex stuff intuitively and imperatively:
 
 ```js
 // combine two sources:
