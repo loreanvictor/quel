@@ -28,9 +28,10 @@ describe(observe, () => {
     const c = new Subject<number>()
 
     a.set(b)
-    b.set(1)
 
-    observe($ => cb($($(a)!)))
+    observe($ => $($(a)!)).get(cb)
+
+    b.set(1)
     expect(cb).toHaveBeenCalledWith(1)
 
     a.set(c)
@@ -38,6 +39,10 @@ describe(observe, () => {
 
     c.set(2)
     expect(cb).toHaveBeenCalledWith(2)
+
+    cb.mockReset()
+    b.set(3)
+    expect(cb).not.toHaveBeenCalled()
   })
 
   test('cleans up.', () => {

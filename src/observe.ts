@@ -1,4 +1,4 @@
-import { Source } from './source'
+import { Listener, Source } from './source'
 
 export const SKIP = Symbol()
 
@@ -7,7 +7,7 @@ export type ExprFn<T> = (track: Track) => T | typeof SKIP
 export type Observable<T> = Source<T> | ExprFn<T>
 
 
-function normalize<T>(fn: Observable<T>) {
+function normalize<T>(fn: Observable<T>): Source<T> {
   if (typeof fn === 'function') {
     (fn as any).__observed__ ??= observe(fn)
 
@@ -19,55 +19,55 @@ function normalize<T>(fn: Observable<T>) {
 
 
 export class Observation<T> extends Source<T> {
-  tracked: Source<unknown>[] = []
-  visited: Source<unknown>[] = []
-  handler: () => void
+  tracked: Map<Source<any>, Listener<any>> = new Map()
+  cleanCandidate: Source<any> | undefined
   track: Track
-  syncToken: Symbol | undefined
+  syncToken = 0
 
   constructor(
     readonly fn: ExprFn<T>
   ) {
     super(() => () => {
-      this.tracked.forEach(obs => obs.remove(this.handler))
-      this.tracked.length = 0
-      this.visited.length = 0
+      this.tracked.forEach((h, t) => t.remove(h))
+      this.tracked.clear()
     })
 
-    this.handler = () => this.run()
     this.track = <U>(obs: Observable<U>) => {
       const ob$ = normalize(obs)
-      this.tracked.push(ob$)
-      this.visited.push(ob$)
 
-      return ob$.get(this.handler)
+      if (this.cleanCandidate === ob$) {
+        this.cleanCandidate = undefined
+      }
+
+      if (!this.tracked.has(ob$)) {
+        const handler = () => this.run(ob$)
+        this.tracked.set(ob$, handler)
+
+        return ob$.get(handler)
+      } else {
+        return ob$.get()
+      }
     }
 
     this.run()
   }
 
   protected clean() {
-    const untrack: [Source<unknown>, number][] = []
-    for (let i = 0; i < this.tracked.length; i++) {
-      const t = this.tracked[i]!
-      const index = this.visited.indexOf(t)
-      if (index === -1) {
-        untrack.push([t, i])
-      }
-    }
+    if (this.cleanCandidate) {
+      const handler = this.tracked.get(this.cleanCandidate)!
+      this.cleanCandidate.remove(handler)
+      this.tracked.delete(this.cleanCandidate)
+      this.cleanCandidate = undefined
 
-    for (let i = 0; i < untrack.length; i++) {
-      const [t, index] = untrack[i]!
-      t.remove(this.handler)
-      this.tracked.splice(index, 1)
+      return false
+    } else {
+      return true
     }
-
-    this.visited.length = 0
   }
 
-  protected run() {
-    const syncToken = Symbol()
-    this.syncToken = syncToken
+  protected run(src?: Source<any>) {
+    this.cleanCandidate = src
+    const syncToken = ++this.syncToken
 
     const _res = this.fn(this.track)
 
@@ -77,18 +77,14 @@ export class Observation<T> extends Source<T> {
           return
         }
 
-        this.clean()
-
-        if (res !== SKIP) {
+        if (this.clean() && res !== SKIP) {
           this.emit(res)
         }
       })
     } else {
       const res = _res
 
-      this.clean()
-
-      if (res !== SKIP) {
+      if (this.clean() && res !== SKIP) {
         this.emit(res)
       }
     }
