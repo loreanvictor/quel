@@ -1,4 +1,5 @@
-import { Source, Signal, Timer, Subject, noop, observe } from '../'
+import { Source, Signal, Timer, Subject, EventSource, InputSource,
+  noop, observe, from } from '../'
 
 
 test('exports stuff.', () => {
@@ -6,6 +7,10 @@ test('exports stuff.', () => {
   expect(Signal).toBeDefined()
   expect(Timer).toBeDefined()
   expect(Subject).toBeDefined()
+  expect(EventSource).toBeDefined()
+  expect(InputSource).toBeDefined()
+
   expect(noop).toBeDefined()
   expect(observe).toBeDefined()
+  expect(from).toBeDefined()
 })

@@ -7,7 +7,7 @@ export type ExprFn<T> = (track: Track) => T | typeof SKIP
 export type Observable<T> = Source<T> | ExprFn<T>
 
 
-export function from<T>(fn: Observable<T>) {
+function normalize<T>(fn: Observable<T>) {
   if (typeof fn === 'function') {
     (fn as any).__observed__ ??= observe(fn)
 
@@ -36,7 +36,7 @@ export class Observation<T> extends Source<T> {
 
     this.handler = () => this.run()
     this.track = <U>(obs: Observable<U>) => {
-      const ob$ = from(obs)
+      const ob$ = normalize(obs)
       this.tracked.push(ob$)
       this.visited.push(ob$)
 
