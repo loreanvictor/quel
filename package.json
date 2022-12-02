@@ -1,0 +1,45 @@
+{
+  "name": "quel",
+  "version": "0.0.1",
+  "description": "Expression-based reactive library for hot listenables",
+  "main": "dist/commonjs/index.js",
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "build-commonjs": "tsc -p conf/typescript/commonjs.json",
+    "build-es": "tsc -p conf/typescript/es.json",
+    "build": "npm run build-commonjs && npm run build-es",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loreanvictor/quel.git"
+  },
+  "keywords": [
+    "reactive",
+    "expression",
+    "stream",
+    "observable"
+  ],
+  "author": "Eugene Ghanizadeh Khoub",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/loreanvictor/quel/issues"
+  },
+  "homepage": "https://github.com/loreanvictor/quel#readme",
+  "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/preset-env": "^7.20.2",
+    "@sindresorhus/tsconfig": "^3.0.1",
+    "@types/jest": "^29.2.3",
+    "@types/node": "^18.11.10",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "babel-jest": "^29.3.1",
+    "eslint": "^8.28.0",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
+  }
+}

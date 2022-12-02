@@ -1,0 +1,12 @@
+{
+  "extends": "@sindresorhus/tsconfig",
+  "compilerOptions": {
+		"moduleResolution": "node",
+		"module": "esnext",
+    "jsx": "react",
+		"esModuleInterop": true,
+		"noImplicitAny": false
+  },
+  "include": ["../../src"],
+	"exclude": ["../../**/test/**/*"]
+}
