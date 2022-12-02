@@ -1,10 +1,9 @@
-import { noop } from './noop'
 import { Source } from './source'
 
 
 export class Signal extends Source<void> {
   constructor() {
-    super(noop)
+    super()
   }
 
   public send() {

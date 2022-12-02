@@ -11,7 +11,7 @@ export class Source<T> {
   cleanup: Cleanup
 
   constructor(
-    readonly producer: Producer<T>
+    readonly producer: Producer<T> = noop
   ) {
     this.cleanup = producer(val => this.emit(val)) ?? noop
   }
@@ -38,7 +38,7 @@ export class Source<T> {
     }
   }
 
-  clear() {
+  stop() {
     this.cleanup()
     this.subs.length = 0
   }

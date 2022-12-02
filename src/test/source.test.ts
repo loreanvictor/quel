@@ -62,7 +62,7 @@ describe(Source, () => {
 
     listener.mockReset()
 
-    source.clear()
+    source.stop()
     signal.send()
     expect(listener).not.toHaveBeenCalled()
   })
