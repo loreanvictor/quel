@@ -1,6 +1,6 @@
 {
   "name": "quel",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Expression-based reactive library for hot listenables",
   "main": "dist/commonjs/index.js",
   "module": "dist/es6/index.js",
@@ -53,6 +53,7 @@
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
     "rxjs": "^7.5.7",
+    "sleep-promise": "^9.1.0",
     "streamlets": "^0.5.1",
     "table": "^6.8.1",
     "test-callbag-jsx": "^0.4.1",

@@ -1,15 +1,17 @@
-import { from, observe } from '../src'
+import { from, observe, Timer } from '../src'
+import sleep from 'sleep-promise'
 
+const div$ = document.querySelector('div')
+const input = from(document.querySelector('input'))
 
-const a$ = document.getElementById('a')
-const b$ = document.getElementById('b')
-const res$ = document.getElementById('res')
+const timer = async $ => {
+  const rate = parseInt($(input) ?? 100)
+  await sleep(200)
 
-const ainput = from(a$)
-const binput = from(b$)
+  return new Timer(rate)
+}
 
 observe($ => {
-  const a = parseInt($(ainput) ?? 0)
-  const b = parseInt($(binput) ?? 0)
-  res$.innerHTML = a + b
+  const elapsed = $($(timer)) ?? '-'
+  div$.textContent = `elapsed: ${elapsed}`
 })

@@ -33,6 +33,10 @@ export class Observation<T> extends Source<T> {
     })
 
     this.track = <U>(obs: Observable<U>) => {
+      if (!obs) {
+        return undefined
+      }
+
       const ob$ = normalize(obs)
 
       if (this.cleanCandidate === ob$) {
