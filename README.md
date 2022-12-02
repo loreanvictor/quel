@@ -80,7 +80,7 @@ observe($ => {
 
 ## Why?
 
-⚡ [**quel**](.) has a minimal API surface, allowing you to do complex stuff intuitively and imperatively:
+⚡ [**quel**](.) has a minimal API surface, allowing you to do complex stuff intuitively and imperatively (instead of wrestling with tons of operators):
 
 ```js
 // combine two sources:
