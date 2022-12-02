@@ -80,7 +80,7 @@ observe($ => {
 
 ## Why?
 
-⚡ [**quel**](.) has a minimal API surface, allowing you to do complex stuff intuitively and imperatively (instead of wrestling with tons of operators):
+⚡ [**quel**](.) has a minimal API surface, allowing you to do manage your reactive streams intuitively and imperatively (instead of wrestling with tons of operators):
 
 ```js
 // combine two sources:
@@ -99,6 +99,35 @@ const debounced = (src, ms) => async $ => {
 // flatten (e.g. switchMap):
 const flatten = src => $ => $($(src))
 ```
+```js
+// merge sources
+const merge = (...sources) => new Source(emit => {
+  const obs = sources.map(src => observe($ => emit($(src))))
+
+  return () => obs.forEach(ob => ob.stop())
+})
+```
+```js
+// filter a source
+const filtered = $ => $(src) % 2 === 0 ? $(src) : SKIP
+```
+```js
+// throttle
+const throttled = (src, ms) => {
+  let timeout = null
+  
+  return $ => {
+    const value = $(src)
+    if (timeout === null) {
+      timeout = setTimeout(() => timeout = null, ms)
+      return val
+    } else {
+      return SKIP
+    }
+  }
+}
+```
+
 <br>
 
 ⚡ [**quel**](.) is imperative (unlike likes of [RxJS](https://rxjs.dev), which are functional):
