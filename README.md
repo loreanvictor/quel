@@ -14,13 +14,12 @@ Expression-based reactive library for hot listenables:
 ```js
 import { from, observe } from 'quel'
 
-const span$ = document.querySelector('span')
-const a = from(document.querySelector('#a'))
-const b = from(document.querySelector('#b'))
+const div$ = document.querySelector('div')
+const input = from(document.querySelector('textarea'))
 
-observe($ => {
-  const sum = parseInt($(a) ?? 0) + parseInt($(b) ?? 0)
-  span$.textContent = sum
-})
+const chars = $ => $(input)?.length ?? 0
+const words = $ => $(input)?.split(' ').length ?? 0
+
+observe($ => div$.textContent = `${$(chars)} chars, ${$(words)} words`)
 ```
 [👉 Try it out!](https://stackblitz.com/edit/js-jh6zt2?file=index.html,index.js)
