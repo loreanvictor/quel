@@ -3,6 +3,7 @@ export default {
   verbose: true,
   clearMocks: true,
   testEnvironment: 'jsdom',
+  testMatch: ['**/test/*.test.[jt]s?(x)'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.test.{ts,tsx}',

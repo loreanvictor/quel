@@ -111,4 +111,8 @@ describe(observe, () => {
     expect(cb).toHaveBeenCalledWith(2)
     expect(cb).toHaveBeenCalledWith(3)
   })
+
+  test('ignores when tracking undefined.', () => {
+    expect(() => observe($ => $(undefined as any))).not.toThrow()
+  })
 })
