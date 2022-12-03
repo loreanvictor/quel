@@ -1,21 +1,26 @@
+<br>
+
 <img src="misc/dark.svg#gh-dark-mode-only" height="96px"/>
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
-
-_Imperative reactive programming in JavaScript._
 
 [![tests](https://github.com/loreanvictor/quel/actions/workflows/test.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/test.yml)
 [![coverage](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml)
 [![version](https://img.shields.io/npm/v/quel?logo=npm)](https://www.npmjs.com/package/quel)
+![types](https://img.shields.io/npm/types/quel)
+
+_Imperative Reactive Programming for JavaScript_
 
 ```bash
 npm i quel
 ```
+> ⚠️ **EXPERIMENTAL**, not for use on production
+
 
 <br>
 
-## What is this?
+Most applications written in JavaScript require some degree of [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). This is either achieved via domain-specific frameworks (such as [React](https://reactjs.org)) or general-purpose libraries like [RxJS](https://rxjs.dev), which are centered around a [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) paradigm.
 
-[**quel**](.) allows you to handle hot listenables (user events, web sockets, timers, etc) in an imperative and efficient way:
+[**quel**](.) is a general-purpose library for reactive programming with an imperative style, resulting in code more in line with most other JavaScript code, and easier to read,write, understand and maintain. 
 
 ```js
 import { from, observe } from 'quel'
@@ -23,54 +28,43 @@ import { from, observe } from 'quel'
 
 const div$ = document.querySelector('div')
 
-// creates a listenable source from given HTML input
+// 👇 this is an event source
 const input = from(document.querySelector('textarea'))
 
-// calculates number of chars from `input` source
+// 👇 these are computed values based on that source
 const chars = $ => $(input)?.length ?? 0
-
-// calculates number of words from `input` source
 const words = $ => $(input)?.split(' ').length ?? 0
 
-// displays these calculated numbers
+// 👇 this is a side effect executed when the computed values change
 observe($ => div$.textContent = `${$(chars)} chars, ${$(words)} words`)
 ```
 [👉 Try it out!](https://stackblitz.com/edit/js-jh6zt2?file=index.html,index.js)
 
 <br>
 
-A more interesting example:
+A more involved example:
 
 ```js
+//
+// this code creates a timer whose rate changes
+// based on values from an input.
+//
+
 import { from, observe, Timer } from 'quel'
 
 
 const div$ = document.querySelector('div')
 const input = from(document.querySelector('input'))
 
-//
-// whenever the user input changes, we want to reset
-// the timer and start it with the rate user has specified.
-//
 const timer = async $ => {
-
-  // read the rate from user input
   const rate = parseInt($(input) ?? 100)
-  
-  // but also, wait a bit until the user
-  // settles on the rate they want to specify.
-  // this basically debounces user input.
   await sleep(200)
 
-  // return a new timer, which is a listenable source itself
+  // 👇 a timer is a source itself, we have a higher-level event source here!
   return new Timer(rate)
 }
 
-// displays the value of the timer
 observe($ => {
-
-  // `timer` is a higher-level source.
-  // this chain application of `$` flattens it.
   const elapsed = $($(timer)) ?? '-'
   div$.textContent = `elapsed: ${elapsed}`
 })
@@ -79,9 +73,94 @@ observe($ => {
 
 <br>
 
-## Why?
+# Walkthrough
 
-⚡ [**quel**](.) has a minimal API surface, allowing you to do manage your reactive streams intuitively and imperatively (instead of wrestling with tons of operators):
+Create a subject:
+```js
+import { Subject } from 'quel'
+
+const a = new Subject()
+a.set(2)
+```
+Create a timer:
+```js
+import { Timer } from 'quel'
+
+const timer = new Timer(1000)
+```
+Create an event source:
+```js
+import { from } from 'quel'
+
+const click = from(document.querySelector('button'))
+const hover = from(document.querySelector('button'), 'hover')
+const input = from(document.querySelector('input'))
+```
+Create a custom source:
+```js
+import { Source } from 'quel'
+
+const src = new Source(async emit => {
+  await sleep(1000)
+  emit('Hellow World!')
+})
+```
+
+<br>
+
+Combine two sources:
+```js
+const sum = $ => $(a) + $(b)
+```
+Filter values
+```js
+import { SKIP } from 'quel'
+
+const odd = $ => $(a) % 2 === 0 ? SKIP : $(a)
+```
+Do async operations:
+```js
+const response = async $ => {
+  const query = $(input)
+  await sleep(200)
+  
+  const res = await fetch(`https://my.api/q?=${query}`)
+  const json = await res.json()
+  
+  return res
+}
+```
+Flatten higher-order sources:
+```js
+const variableTimer = $ => new Timer($(input))
+const message = $ => 'elapsed: ' + $($(timer))
+```
+Run side effects:
+```js
+import { observe } from 'quel'
+
+observe($ => console.log($(message)))
+```
+
+<br>
+
+Cleanup:
+```js
+const timer = new Timer(1000)
+const effect = observe($ => console.log($(timer)))
+
+// 👇 this just stops the side-effect, the timer keeps going ...
+effect.stop()
+
+// 👇 this stops the timer. you don't need to stop the effect manually.
+timer.stop()
+```
+
+<br>
+
+# Features
+
+⚡ [**quel**](.) has a minimal API surface (the whole package [is ~1.1KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
 
 ```js
 // combine two sources:
@@ -131,7 +210,7 @@ const throttled = (src, ms) => {
 
 <br>
 
-⚡ [**quel**](.) is imperative (unlike likes of [RxJS](https://rxjs.dev), which are functional):
+⚡ [**quel**](.) is imperative (unlike most other general-purpose reactive programming libraries such as [RxJS](https://rxjs.dev), which are functional), resulting in code that is easier to read, write and debug:
 
 ```js
 import { interval, map, filter } from 'rxjs'
@@ -157,10 +236,9 @@ observe($ => {
   }
 })
 ```
+
 <br>
 
-> ⚠️⚠️ **WARNING** ⚠️⚠️
->
-> All that said, [**quel**](.) is an experimental tool. I have merely built it to see whether I can create a fully imperative API for reactive programming without sacrificing _much_ performance (yes you can). For example, it doesn't have any error handling code (for sake of simplicity), which might become problematic in larger projects. Also it is not battle-tested for production use at all.
+⚡ [**quel**](.) is as fast as [RxJS](https://rxjs.dev), noticeably faster in cases. Note that in most cases performance is not the primary concern when conducting reactive programming (since you are handling async events). If performance is critical for your use case, I'd recommend using likes of [xstream](http://staltz.github.io/xstream/) or [streamlets](https://github.com/loreanvictor/streamlet), as the imperative style of [**quel**](.) does tax a performance penalty inevitably compared to the fastest possible implementation.
 
 <br><br>
