@@ -1,10 +1,12 @@
 /* istanbul ignore file */
 
-export function addListener<EventName extends keyof HTMLElementEventMap>
+export type EventMap = HTMLElementEventMap & WebSocketEventMap
+
+export function addListener<EventName extends keyof EventMap>
 (
   node: EventTarget,
   name: EventName,
-  handler: (event: HTMLElementEventMap[EventName]) => void,
+  handler: (event: EventMap[EventName]) => void,
   options?: boolean | AddEventListenerOptions,
 ) {
   if (node.addEventListener) {
@@ -15,11 +17,11 @@ export function addListener<EventName extends keyof HTMLElementEventMap>
 }
 
 
-export function removeListener<EventName extends keyof HTMLElementEventMap>
+export function removeListener<EventName extends keyof EventMap>
 (
   node: EventTarget,
   name: EventName,
-  handler: (event: HTMLElementEventMap[EventName]) => void,
+  handler: (event: EventMap[EventName]) => void,
   options?: boolean | AddEventListenerOptions,
 ) {
   if (node.removeEventListener) {

@@ -1,11 +1,16 @@
+import { EventMap } from './util/dom-events'
 import { EventSource } from './event'
 import { InputSource } from './input'
 
 
 export function from(input: HTMLInputElement): InputSource
 export function from(node: EventTarget): EventSource<'click'>
-export function from<EventName extends keyof HTMLElementEventMap>(node: EventTarget, name: EventName, options?: boolean | AddEventListenerOptions): EventSource<EventName>
-export function from<EventName extends keyof HTMLElementEventMap>(
+export function from<EventName extends keyof EventMap>(
+  node: EventTarget,
+  name: EventName,
+  options?: boolean | AddEventListenerOptions
+): EventSource<EventName>
+export function from<EventName extends keyof EventMap>(
   node: EventTarget,
   name: EventName = 'click' as EventName,
   options?: boolean | AddEventListenerOptions,
