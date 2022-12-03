@@ -1,6 +1,6 @@
 {
   "name": "quel",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Expression-based reactive library for hot listenables",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",
@@ -18,7 +18,7 @@
     "bench": "npm run bench:perf && npm run bench:mem"
   },
   "files": [
-    "dist/es6",
+    "dist/es",
     "dist/commonjs"
   ],
   "sideEffects": false,
