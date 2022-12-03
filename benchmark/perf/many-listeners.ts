@@ -2,50 +2,47 @@ import { benchmark } from './util/benchmark'
 
 import { pipe as spipe, Subject as sSubject, map as smap, filter as sfilter, observe as sobserve } from 'streamlets'
 import { Subject as rSubject, map as rmap, filter as rfilter } from 'rxjs'
-import { Subject, observe, SKIP } from '../../src'
+import { Subject, observe, SKIP, Track } from '../../src'
 
 
-const data = [...Array(3_000_000).keys()]
+const data = [...Array(1_000).keys()]
+const listeners = [...Array(1_00).keys()]
 
-benchmark('simple', {
+benchmark('many listeners', {
   RxJS: () => {
     const a = new rSubject<number>()
 
-    const s = a.pipe(
+    const o = a.pipe(
       rmap(x => x * 3),
       rfilter(x => x % 2 === 0)
-    ).subscribe()
+    )
 
+    listeners.forEach(() => o.subscribe())
     data.forEach(x => a.next(x))
-
-    return () => s.unsubscribe()
   },
 
   Streamlets: () => {
     const a = new sSubject<number>()
 
-    const o = spipe(
+    const s = spipe(
       a,
       smap(x => x * 3),
       sfilter(x => x % 2 === 0),
-      sobserve,
     )
 
+    listeners.forEach(() => sobserve(s))
     data.forEach(x => a.receive(x))
-
-    return () => o.stop()
   },
 
   Quel: () => {
     const a = new Subject<number>()
-    const o = observe($ => {
+    const e = ($: Track) => {
       const b = $(a)! * 3
 
       return b % 2 === 0 ? b : SKIP
-    })
+    }
 
+    listeners.forEach(() => observe(e))
     data.forEach(x => a.set(x))
-
-    return () => o.stop()
   },
 })

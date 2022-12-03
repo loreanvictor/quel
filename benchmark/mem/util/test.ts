@@ -21,7 +21,7 @@ function sample(fn: () => () => void) {
   }
 }
 
-export function test(fn: () => () => void, N = 32, warmup = 10) {
+export function test(fn: () => () => void, N = 64, warmup = 16) {
   const samples: Data[] = []
 
   for (let i = 0; i < warmup; i++) {

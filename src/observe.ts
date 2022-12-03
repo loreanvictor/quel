@@ -21,7 +21,6 @@ function normalize<T>(fn: Observable<T>): Source<T> {
 export class Observation<T> extends Source<T> {
   tracked: Map<Source<any>, Listener<any>> = new Map()
   cleanCandidate: Source<any> | undefined
-  track: Track
   syncToken = 0
 
   constructor(
@@ -31,27 +30,6 @@ export class Observation<T> extends Source<T> {
       this.tracked.forEach((h, t) => t.remove(h))
       this.tracked.clear()
     })
-
-    this.track = <U>(obs: Observable<U>) => {
-      if (!obs) {
-        return undefined
-      }
-
-      const ob$ = normalize(obs)
-
-      if (this.cleanCandidate === ob$) {
-        this.cleanCandidate = undefined
-      }
-
-      if (!this.tracked.has(ob$)) {
-        const handler = () => this.run(ob$)
-        this.tracked.set(ob$, handler)
-
-        return ob$.get(handler)
-      } else {
-        return ob$.get()
-      }
-    }
 
     this.run()
   }
@@ -69,11 +47,15 @@ export class Observation<T> extends Source<T> {
     }
   }
 
+  protected nextToken() {
+    return ++this.syncToken > 10e12 ? this.syncToken = 0 : this.syncToken
+  }
+
   protected run(src?: Source<any>) {
     this.cleanCandidate = src
-    const syncToken = ++this.syncToken
+    const syncToken = this.nextToken()
 
-    const _res = this.fn(this.track)
+    const _res = this.fn(obs => obs ? this.track(normalize(obs), syncToken) : undefined)
 
     if (_res instanceof Promise) {
       _res.then(res => {
@@ -91,6 +73,25 @@ export class Observation<T> extends Source<T> {
       if (this.clean() && res !== SKIP) {
         this.emit(res)
       }
+    }
+  }
+
+  protected track<U>(src: Source<U>, syncToken: number) {
+    if (syncToken !== this.syncToken) {
+      return undefined
+    }
+
+    if (this.cleanCandidate === src) {
+      this.cleanCandidate = undefined
+    }
+
+    if (!this.tracked.has(src)) {
+      const handler = () => this.run(src)
+      this.tracked.set(src, handler)
+
+      return src.get(handler)
+    } else {
+      return src.get()
     }
   }
 }

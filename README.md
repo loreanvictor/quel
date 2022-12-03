@@ -158,10 +158,6 @@ observe($ => {
 ```
 <br>
 
-⚡ [**quel**](.) is also faster than [RxJS](https://rxjs.dev) (which isn't that important), and noticeably lighter on memory usage (which is actually important).
-
-<br>
-
 > ⚠️⚠️ **WARNING** ⚠️⚠️
 >
 > All that said, [**quel**](.) is an experimental tool. I have merely built it to see whether I can create a fully imperative API for reactive programming without sacrificing _much_ performance (yes you can). For example, it doesn't have any error handling code (for sake of simplicity), which might become problematic in larger projects. Also it is not battle-tested for production use at all.

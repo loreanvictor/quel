@@ -1,7 +1,6 @@
 import { benchmark } from './util/benchmark'
 
 import { pipe as spipe, Subject as sSubject, map as smap, filter as sfilter, observe as sobserve } from 'streamlets'
-// import { expr as sexpr, SKIP as sSKIP } from 'streamlets'
 import { Subject as rSubject, map as rmap, filter as rfilter } from 'rxjs'
 import { Subject, observe, SKIP } from '../../src'
 
@@ -32,21 +31,6 @@ benchmark('simple', {
 
     data.forEach(x => a.receive(x))
   },
-
-  // StreamletExpr: () => {
-  //   const a = new sSubject<number>()
-
-  //   spipe(
-  //     sexpr($ => {
-  //       const x = $(a) * 3
-
-  //       return x % 2 === 0 ? x : sSKIP
-  //     }),
-  //     sobserve
-  //   )
-
-  //   data.forEach(x => a.receive(x))
-  // },
 
   Quel: () => {
     const a = new Subject<number>()

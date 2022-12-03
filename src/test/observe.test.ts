@@ -1,3 +1,4 @@
+// import sleep from 'sleep-promise'
 import { Subject } from '../subject'
 import { observe, Track } from '../observe'
 
@@ -61,9 +62,9 @@ describe(observe, () => {
 
   test('runs async functions.', async () => {
     jest.useFakeTimers()
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
     const cb = jest.fn()
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
     const a = new Subject<number>()
 
@@ -114,5 +115,35 @@ describe(observe, () => {
 
   test('ignores when tracking undefined.', () => {
     expect(() => observe($ => $(undefined as any))).not.toThrow()
+  })
+
+  test('does not track when run is cancelled.', async () => {
+    const cb = jest.fn()
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+    const a = new Subject<number>()
+    const b = new Subject()
+    const c = new Subject()
+
+    b.set('B')
+    c.set('C')
+
+    observe(async $ => {
+      cb()
+      const rate = $(a) ?? 0
+      await sleep(rate)
+
+      return rate % 2 === 0 ? $(b) : $(c)
+    })
+
+    a.set(10)
+    await sleep(5)
+    a.set(11)
+    await sleep(15)
+
+    expect(cb).toHaveBeenCalledTimes(3)
+
+    b.set('b')
+    expect(cb).toHaveBeenCalledTimes(3)
   })
 })
