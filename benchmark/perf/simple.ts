@@ -2,6 +2,7 @@ import { benchmark } from './util/benchmark'
 
 import { pipe as spipe, Subject as sSubject, map as smap, filter as sfilter, observe as sobserve } from 'streamlets'
 import { Subject as rSubject, map as rmap, filter as rfilter } from 'rxjs'
+import xs from 'xstream'
 import { Subject, observe, SKIP } from '../../src'
 
 
@@ -42,4 +43,18 @@ benchmark('simple', {
 
     data.forEach(x => a.set(x))
   },
+
+  XStream: () => {
+    const a = xs.create<number>()
+
+    a.map(x => x * 3)
+      .filter(x => x % 2 === 0)
+      .subscribe({
+        next: () => {},
+        error: () => {},
+        complete: () => {},
+      })
+
+    data.forEach(x => a.shamefullySendNext(x))
+  }
 })

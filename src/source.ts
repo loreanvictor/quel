@@ -18,8 +18,9 @@ export class Source<T> {
 
   protected emit(val: T) {
     this.last = val
-    for(let i = 0; i < this.subs.length; i++) {
-      this.subs[i]!(val)
+    const cpy = this.subs.slice()
+    for(let i = 0; i < cpy.length; i++) {
+      cpy[i]!(val)
     }
   }
 
