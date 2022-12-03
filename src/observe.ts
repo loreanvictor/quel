@@ -48,6 +48,7 @@ export class Observation<T> extends Source<T> {
   }
 
   protected nextToken() {
+    /* istanbul ignore next */
     return ++this.syncToken > 10e12 ? this.syncToken = 0 : this.syncToken
   }
 
