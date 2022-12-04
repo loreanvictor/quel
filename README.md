@@ -1,5 +1,3 @@
-<br>
-
 <img src="misc/dark.svg#gh-dark-mode-only" height="96px"/>
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
 
