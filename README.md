@@ -286,4 +286,11 @@ observe($ => {
 
 ⚡ [**quel**](.) is as fast as [RxJS](https://rxjs.dev), noticeably faster in cases. Note that in most cases performance is not the primary concern when conducting reactive programming (since you are handling async events). If performance is critical for your use case, I'd recommend using likes of [xstream](http://staltz.github.io/xstream/) or [streamlets](https://github.com/loreanvictor/streamlet), as the imperative style of [**quel**](.) does tax a performance penalty inevitably compared to the fastest possible implementation.
 
-<br><br>
+<br>
+
+# Related Work
+
+- [**quel**](.) is inspired by [rxjs-autorun](https://github.com/kosich/rxjs-autorun) by @kosich.
+- [**quel**](.) is basically an in-field experiment on ideas discussed in detail [here](https://github.com/loreanvictor/reactive-javascript).
+
+<br>
