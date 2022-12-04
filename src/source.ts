@@ -2,18 +2,25 @@ import { noop } from './noop'
 
 export type Listener<T> = (val: T) => void
 export type Cleanup = () => void
-export type Producer<T> = (listener: Listener<T>) => Cleanup | void
+export type Producer<T> = (
+  listener: Listener<T>,
+  finalize: (cleanup: Cleanup) => void
+) => Cleanup | void | Promise<void>
 
 
 export class Source<T> {
   subs: Listener<T>[] = []
   last: T | undefined = undefined
-  cleanup: Cleanup
+  cleanup: Cleanup | undefined
 
   constructor(
     readonly producer: Producer<T> = noop
   ) {
-    this.cleanup = producer(val => this.emit(val)) ?? noop
+    const cl = producer(val => this.emit(val), cleanup => this.cleanup = cleanup)
+
+    if (cl && typeof cl === 'function') {
+      this.cleanup = cl
+    }
   }
 
   protected emit(val: T) {
@@ -40,7 +47,10 @@ export class Source<T> {
   }
 
   stop() {
-    this.cleanup()
+    if (this.cleanup) {
+      this.cleanup()
+    }
+
     this.subs.length = 0
   }
 }
