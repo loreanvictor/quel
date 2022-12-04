@@ -75,7 +75,9 @@ observe($ => {
 
 # Walkthrough
 
-Create a subject:
+### Sources
+
+Create a subject (whose value you can manually set at any time):
 ```js
 import { Subject } from 'quel'
 
@@ -105,14 +107,20 @@ const src = new Source(async emit => {
   emit('Hellow World!')
 })
 ```
+Read latest value of a source:
+```js
+src.get()
+```
 
 <br>
+
+### Expressions
 
 Combine two sources:
 ```js
 const sum = $ => $(a) + $(b)
 ```
-Filter values
+Filter values:
 ```js
 import { SKIP } from 'quel'
 
@@ -135,6 +143,11 @@ Flatten higher-order sources:
 const variableTimer = $ => new Timer($(input))
 const message = $ => 'elapsed: ' + $($(timer))
 ```
+
+<br>
+
+### Observation
+
 Run side effects:
 ```js
 import { observe } from 'quel'
@@ -142,9 +155,18 @@ import { observe } from 'quel'
 observe($ => console.log($(message)))
 ```
 
+Observations are sources themselves:
+```js
+const y = observe($ => $(x) * 2)
+console.log(y.get())
+```
+
 <br>
 
-Cleanup:
+### Cleanup
+
+Manually cleanup:
+
 ```js
 const timer = new Timer(1000)
 const effect = observe($ => console.log($(timer)))
@@ -154,6 +176,31 @@ effect.stop()
 
 // 👇 this stops the timer. you don't need to stop the effect manually.
 timer.stop()
+```
+
+Specify cleanup code in custom sources:
+```js
+const myTimer = new Source(emit => {
+  let i = 0
+  const interval = setInterval(() => emit(++i), 1000)
+  
+  // 👇 clear the interval when the source is stopped
+  return () => clearInterval(interval)
+})
+```
+```js
+// 👇 with async producers, use a callback to specify cleanup code
+const asyncTimer = new Source(async (emit, finalize) => {
+  let i = 0
+  let stopped = false
+  
+  finalize(() => stopped = true)
+  
+  while (!stopped) {
+    emit(++i)
+    await sleep(1000)
+  }
+})
 ```
 
 <br>
