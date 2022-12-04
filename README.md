@@ -290,7 +290,7 @@ observe($ => {
 
 # Related Work
 
-- [**quel**](.) is inspired by [rxjs-autorun](https://github.com/kosich/rxjs-autorun) by @kosich.
+- [**quel**](.) is inspired by [rxjs-autorun](https://github.com/kosich/rxjs-autorun) by [@kosich](https://github.com/kosich).
 - [**quel**](.) is basically an in-field experiment on ideas discussed in detail [here](https://github.com/loreanvictor/reactive-javascript).
 
 <br>
