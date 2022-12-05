@@ -18,7 +18,7 @@ npm i quel
 
 Most applications written in JavaScript require some degree of [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). This is either achieved via domain-specific frameworks (such as [React](https://reactjs.org)) or general-purpose libraries like [RxJS](https://rxjs.dev), which are centered around a [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) paradigm.
 
-[**quel**](.) is a general-purpose library for reactive programming with an imperative style, resulting in code more in line with most other JavaScript code, and easier to read,write, understand and maintain. 
+[**quel**](.) is a general-purpose library for reactive programming with an imperative style, resulting in code more in line with most other JavaScript code, and easier to read, write, understand and maintain. 
 
 ```js
 import { from, observe } from 'quel'
@@ -71,7 +71,7 @@ observe($ => {
 
 <br>
 
-# Walkthrough
+# Usage
 
 ### Sources
 
@@ -142,6 +142,33 @@ const variableTimer = $ => new Timer($(input))
 const message = $ => 'elapsed: ' + $($(timer))
 ```
 
+<br>
+
+> ℹ️ **IMPORTANT**
+>
+> Only pass _stable references_ to the track function `$`. Expressions are re-run whenever the tracked
+> sources emit a new value, so if sources they are tracking aren't stable with regards to execution of the
+> expression itself, they will be tracking new sources each time, resulting in behavior that is most probably
+> not intended.
+>
+> ```js
+> // 👇 this is WRONG ❌
+> const computed = $ => $(new Timer(1000)) * 2
+> ```
+> ```js
+> // 👇 this is CORRECT ✅
+> const timer = new Timer(1000)
+> const computed = $ => $(timer) * 2
+> ```
+>
+> The track function `$` itself returns a stable reference, so you can safely chain it for flattening
+> higher-order sources:
+> ```js
+> const timer = $ => new Timer($(rate))
+> 
+> // 👇 this is OK, as $(timer) is a stable reference
+> const msg = 'elapsed: ' + $($(timer))
+> ```
 <br>
 
 ### Observation
