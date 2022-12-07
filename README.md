@@ -186,6 +186,26 @@ const y = observe($ => $(x) * 2)
 console.log(y.get())
 ```
 
+Expression functions might get aborted mid-execution. You can handle those events by passing a second argument to `observe()`:
+```js
+let ctrl = new AbortController()
+
+const data = observe(async $ => {
+  const q = $(input)
+  await sleep(200)
+  
+  // 👇 pass abort controller signal to fetch to cancel mid-flight requests
+  const res = await fetch('https://my.api/?q=' + q, {
+    signal: ctrl.signal
+  })
+
+  return await res.json()
+}, () => {
+  ctrl.abort()
+  ctrl = new AbortController()
+})
+```
+
 <br>
 
 ### Cleanup
@@ -230,9 +250,23 @@ const asyncTimer = new Source(async (emit, finalize) => {
 
 <br>
 
+### Typing
+
+TypeScript wouldn't be able to infer proper types for expressions. To resolve this issue, use `Track` type:
+
+```ts
+import { Track } from 'quel'
+
+const expr = ($: Track) => $(a) * 2
+```
+
+👉 [Check this](src/types.ts) for more useful types.
+
+<br>
+
 # Features
 
-⚡ [**quel**](.) has a minimal API surface (the whole package [is ~1.1KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
+🧩 [**quel**](.) has a minimal API surface (the whole package [is ~1.1KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
 
 ```js
 // combine two sources:
@@ -282,7 +316,7 @@ const throttled = (src, ms) => {
 
 <br>
 
-⚡ [**quel**](.) is imperative (unlike most other general-purpose reactive programming libraries such as [RxJS](https://rxjs.dev), which are functional), resulting in code that is easier to read, write and debug:
+🛂 [**quel**](.) is imperative (unlike most other general-purpose reactive programming libraries such as [RxJS](https://rxjs.dev), which are functional), resulting in code that is easier to read, write and debug:
 
 ```js
 import { interval, map, filter } from 'rxjs'
@@ -311,7 +345,15 @@ observe($ => {
 
 <br>
 
-⚡ [**quel**](.) is as fast as [RxJS](https://rxjs.dev), noticeably faster in cases. Note that in most cases performance is not the primary concern when conducting reactive programming (since you are handling async events). If performance is critical for your use case, I'd recommend using likes of [xstream](http://staltz.github.io/xstream/) or [streamlets](https://github.com/loreanvictor/streamlet), as the imperative style of [**quel**](.) does tax a performance penalty inevitably compared to the fastest possible implementation.
+⚡ [**quel**](.) is as fast as [RxJS](https://rxjs.dev). Note that in most cases performance is not the primary concern when conducting reactive programming (since you are handling async events). If performance is critical for your use case, I'd recommend using likes of [xstream](http://staltz.github.io/xstream/) or [streamlets](https://github.com/loreanvictor/streamlet), as the imperative style of [**quel**](.) does tax a performance penalty inevitably compared to the fastest possible implementation.
+
+<br>
+
+🧠 [**quel**](.) is more memory-intensive than [RxJS](https://rxjs.dev). Similar to the unavoidable performance tax, tracking sources of an expression will use more memory compared to explicitly tracking and specifying them.
+
+<br>
+
+☕ [**quel**](.) only supports [hot](https://rxjs.dev/guide/glossary-and-semantics#hot) [listenables](https://rxjs.dev/guide/glossary-and-semantics#push). Certain use cases would benefit (for example, in terms of performance) from using cold listenables, or from having hybrid pull-push primitives. However, for most common event sources (user events, timers, Web Sockets, etc.) are hot listenables, and [**quel**](.) does indeed use the limited scope for simplification and optimization of its code.
 
 <br>
 
