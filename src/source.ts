@@ -1,14 +1,8 @@
 import { noop } from './noop'
-
-export type Listener<T> = (val: T) => void
-export type Cleanup = () => void
-export type Producer<T> = (
-  listener: Listener<T>,
-  finalize: (cleanup: Cleanup) => void
-) => Cleanup | void | Promise<void>
+import { Listener, Producer, Cleanup, SourceLike } from './types'
 
 
-export class Source<T> {
+export class Source<T> implements SourceLike<T> {
   subs: Listener<T>[] = []
   last: T | undefined = undefined
   cleanup: Cleanup | undefined

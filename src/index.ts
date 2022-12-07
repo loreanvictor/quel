@@ -7,3 +7,5 @@ export * from './observe'
 export * from './event'
 export * from './input'
 export * from './from'
+export * from './types'
+

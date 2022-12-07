@@ -1,4 +1,5 @@
-import { Listener, Source } from './source'
+import { Listener } from './types'
+import { Source } from './source'
 
 
 export class Signal extends Source<void> {

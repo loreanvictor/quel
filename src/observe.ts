@@ -1,13 +1,8 @@
-import { Listener, Source } from './source'
-
-export const SKIP = Symbol()
-
-export type Track = <T>(obs: Observable<T>) => T | undefined
-export type ExprFn<T> = (track: Track) => T | typeof SKIP
-export type Observable<T> = Source<T> | ExprFn<T>
+import { Listener, SourceLike, Observable, ExprFn, SKIP } from './types'
+import { Source } from './source'
 
 
-function normalize<T>(fn: Observable<T>): Source<T> {
+function normalize<T>(fn: Observable<T>): SourceLike<T> {
   if (typeof fn === 'function') {
     (fn as any).__observed__ ??= observe(fn)
 
@@ -19,8 +14,8 @@ function normalize<T>(fn: Observable<T>): Source<T> {
 
 
 export class Observation<T> extends Source<T> {
-  tracked: Map<Source<any>, Listener<any>> = new Map()
-  cleanCandidate: Source<any> | undefined
+  tracked: Map<SourceLike<any>, Listener<any>> = new Map()
+  cleanCandidate: SourceLike<any> | undefined
   syncToken = 0
 
   constructor(
@@ -56,7 +51,7 @@ export class Observation<T> extends Source<T> {
     return ++this.syncToken > 10e12 ? this.syncToken = 1 : this.syncToken
   }
 
-  protected run(src?: Source<any>) {
+  protected run(src?: SourceLike<any>) {
     this.cleanCandidate = src
     const syncToken = this.nextToken()
 
@@ -81,7 +76,7 @@ export class Observation<T> extends Source<T> {
     }
   }
 
-  protected track<U>(src: Source<U>, syncToken: number) {
+  protected track<U>(src: SourceLike<U>, syncToken: number) {
     if (syncToken !== this.syncToken) {
       return undefined
     }

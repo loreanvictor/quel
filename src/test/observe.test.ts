@@ -1,6 +1,7 @@
 // import sleep from 'sleep-promise'
 import { Subject } from '../subject'
-import { observe, Track } from '../observe'
+import { Track } from '../types'
+import { observe } from '../observe'
 
 
 describe(observe, () => {
