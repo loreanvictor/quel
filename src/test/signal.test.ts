@@ -9,4 +9,14 @@ describe(Signal, () => {
     signal.send()
     expect(listener).toHaveBeenCalled()
   })
+
+  test('gets listeners once.', () => {
+    const signal = new Signal()
+    const listener = jest.fn()
+    signal.once(listener)
+    signal.send()
+    expect(listener).toHaveBeenCalledTimes(1)
+    signal.send()
+    expect(listener).toHaveBeenCalledTimes(1)
+  })
 })

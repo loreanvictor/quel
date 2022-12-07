@@ -146,4 +146,17 @@ describe(observe, () => {
     b.set('b')
     expect(cb).toHaveBeenCalledTimes(3)
   })
+
+  test('accepts an abort listener.', () => {
+    const abort = jest.fn()
+
+    const a = new Subject<number>()
+    observe($ => $(a)! * 2, abort)
+
+    expect(abort).not.toHaveBeenCalled()
+    a.set(1)
+    expect(abort).toHaveBeenCalledTimes(1)
+    a.set(2)
+    expect(abort).toHaveBeenCalledTimes(2)
+  })
 })

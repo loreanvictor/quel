@@ -24,7 +24,8 @@ export class Observation<T> extends Source<T> {
   syncToken = 0
 
   constructor(
-    readonly fn: ExprFn<T>
+    readonly fn: ExprFn<T>,
+    readonly abort?: Listener<void>,
   ) {
     super(() => () => {
       this.tracked.forEach((h, t) => t.remove(h))
@@ -48,8 +49,11 @@ export class Observation<T> extends Source<T> {
   }
 
   protected nextToken() {
+    // eslint-disable-next-line no-unused-expressions
+    this.syncToken > 0 && this.abort && this.abort()
+
     /* istanbul ignore next */
-    return ++this.syncToken > 10e12 ? this.syncToken = 0 : this.syncToken
+    return ++this.syncToken > 10e12 ? this.syncToken = 1 : this.syncToken
   }
 
   protected run(src?: Source<any>) {
@@ -98,6 +102,6 @@ export class Observation<T> extends Source<T> {
 }
 
 
-export function observe<T>(fn: ExprFn<T>) {
-  return new Observation(fn)
+export function observe<T>(fn: ExprFn<T>, abort?: Listener<void>) {
+  return new Observation(fn, abort)
 }
