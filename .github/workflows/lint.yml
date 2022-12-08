@@ -1,4 +1,4 @@
-name: lint and typecheck
+name: lint
 on:
   push:
     branches: ['*']
