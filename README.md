@@ -345,7 +345,7 @@ observe($ => {
 
 <br>
 
-⚡ [**quel**](.) is as fast as [RxJS](https://rxjs.dev). Note that in most cases performance is not the primary concern when conducting reactive programming (since you are handling async events). If performance is critical for your use case, I'd recommend using likes of [xstream](http://staltz.github.io/xstream/) or [streamlets](https://github.com/loreanvictor/streamlet), as the imperative style of [**quel**](.) does tax a performance penalty inevitably compared to the fastest possible implementation.
+⚡ [**quel**](.) is as fast as [RxJS](https://rxjs.dev). Note that in most cases performance is not the primary concern when programming reactive applications (since you are handling async events). If performance is critical for your use case, I'd recommend using likes of [xstream](http://staltz.github.io/xstream/) or [streamlets](https://github.com/loreanvictor/streamlet), as the imperative style of [**quel**](.) does tax a performance penalty inevitably compared to the fastest possible implementation.
 
 <br>
 
@@ -353,7 +353,7 @@ observe($ => {
 
 <br>
 
-☕ [**quel**](.) only supports [hot](https://rxjs.dev/guide/glossary-and-semantics#hot) [listenables](https://rxjs.dev/guide/glossary-and-semantics#push). Certain use cases would benefit (for example, in terms of performance) from using cold listenables, or from having hybrid pull-push primitives. However, for most common event sources (user events, timers, Web Sockets, etc.) are hot listenables, and [**quel**](.) does indeed use the limited scope for simplification and optimization of its code.
+☕ [**quel**](.) only supports [hot](https://rxjs.dev/guide/glossary-and-semantics#hot) [listenables](https://rxjs.dev/guide/glossary-and-semantics#push). Certain use cases would benefit (for example, in terms of performance) from using cold listenables, or from having hybrid pull-push primitives. However,  most common event sources (user events, timers, Web Sockets, etc.) are hot listenables, and [**quel**](.) does indeed use the limited scope for simplification and optimization of its code.
 
 <br>
 
@@ -361,5 +361,6 @@ observe($ => {
 
 - [**quel**](.) is inspired by [rxjs-autorun](https://github.com/kosich/rxjs-autorun) by [@kosich](https://github.com/kosich).
 - [**quel**](.) is basically an in-field experiment on ideas discussed in detail [here](https://github.com/loreanvictor/reactive-javascript).
+- [**quel**](.)'s focus on hot listenables was inspired by [xstream](https://github.com/staltz/xstream).
 
 <br>
