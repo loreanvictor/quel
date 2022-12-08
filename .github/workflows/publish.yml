@@ -19,7 +19,10 @@ jobs:
 
       - name: Check Coverage
         run: npm run coverage
-        
+
+      - name: Check Linting
+        run: npm run lint
+
       - name: Fix README for NPM
         run: tail -n +2 README.md > README.md.tmp && mv README.md.tmp README.md
       

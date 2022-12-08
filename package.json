@@ -8,6 +8,8 @@
   "scripts": {
     "sample": "vite sample",
     "test": "jest",
+    "lint": "eslint .",
+    "typecheck": "tsc -p conf/typescript/es.json --noEmit",
     "coverage": "jest --coverage",
     "build-commonjs": "tsc -p conf/typescript/commonjs.json",
     "build-es": "tsc -p conf/typescript/es.json",
