@@ -15,11 +15,11 @@ describe(Timer, () => {
 
     jest.advanceTimersByTime(100)
     expect(listener).toHaveBeenCalledTimes(1)
-    expect(listener).toHaveBeenCalledWith(0)
+    expect(listener).toHaveBeenCalledWith(1)
 
     jest.advanceTimersByTime(100)
     expect(listener).toHaveBeenCalledTimes(2)
-    expect(listener).toHaveBeenCalledWith(1)
+    expect(listener).toHaveBeenCalledWith(2)
 
     jest.useRealTimers()
   })
@@ -34,7 +34,7 @@ describe(Timer, () => {
 
     jest.advanceTimersByTime(100)
     expect(listener).toHaveBeenCalledTimes(1)
-    expect(listener).toHaveBeenCalledWith(0)
+    expect(listener).toHaveBeenCalledWith(1)
 
     timer.stop()
 
