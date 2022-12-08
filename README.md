@@ -2,10 +2,9 @@
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
 
 [![tests](https://github.com/loreanvictor/quel/actions/workflows/test.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/test.yml)
-[![coverage](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml)
-[![lint](https://github.com/loreanvictor/quel/actions/workflows/lint.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/lint.yml)
 [![version](https://img.shields.io/npm/v/quel?logo=npm)](https://www.npmjs.com/package/quel)
 [![types](https://img.shields.io/npm/types/quel)](./src/types.ts)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/quel?color=black&label=size)](https://bundlephobia.com/package/quel@latest)
 
 _Imperative Reactive Programming for JavaScript_
 
