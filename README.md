@@ -270,46 +270,43 @@ const expr = ($: Track) => $(a) * 2
 
 ```js
 // combine two sources:
-const combined = $ => $(a) + $(b)
+$ => $(a) + $(b)
 ```
 ```js
 // debounce:
-const debounced = (src, ms) => async $ => {
+async $ => {
   const val = $(src)
-  await sleep(ms)
+  await sleep(1000)
   
-  return val
+  // ...
 }
 ```
 ```js
 // flatten (e.g. switchMap):
-const flatten = src => $ => $($(src))
+$ => $($(src))
 ```
 ```js
 // merge sources
-const merge = (...sources) => new Source(emit => {
+new Source(emit => {
   const obs = sources.map(src => observe($ => emit($(src))))
-
   return () => obs.forEach(ob => ob.stop())
 })
 ```
 ```js
 // filter a source
-const filtered = $ => $(src) % 2 === 0 ? $(src) : SKIP
+$ => $(src) % 2 === 0 ? $(src) : SKIP
 ```
 ```js
 // throttle
-const throttled = (src, ms) => {
-  let timeout = null
+let timeout = null
   
-  return $ => {
-    const value = $(src)
-    if (timeout === null) {
-      timeout = setTimeout(() => timeout = null, ms)
-      return val
-    } else {
-      return SKIP
-    }
+$ => {
+  const value = $(src)
+  if (timeout === null) {
+    timeout = setTimeout(() => timeout = null, 1000)
+    return value
+  } else {
+    return SKIP
   }
 }
 ```
@@ -364,3 +361,4 @@ observe($ => {
 - [**quel**](.)'s focus on hot listenables was inspired by [xstream](https://github.com/staltz/xstream).
 
 <br>
+
