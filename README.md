@@ -122,6 +122,14 @@ Read latest value of a source:
 ```js
 src.get()
 ```
+Stop a source:
+```js
+src.stop()
+```
+Wait for a source to be stopped:
+```js
+await src.stops()
+```
 
 <br>
 
@@ -218,6 +226,30 @@ const data = observe(async $ => {
   ctrl = new AbortController()
 })
 ```
+
+<br>
+
+### Iteration
+
+Iterate on values of a source using `iterate()`:
+```js
+import { iterate } from 'quel'
+
+for await (const i of iterate(src)) {
+  // do something with it
+}
+```
+If the source emits values faster than you consume them, you are going to miss out on them:
+```js
+const timer = new Timer(500)
+
+// 👇 loop body is slower than the source. values will be lost!
+for await (const i of iterate(timer)) {
+  await sleep(1000)
+  console.log(i)
+}
+```
+[👉 Try it out!](https://codepen.io/lorean_victor/pen/abKxbNw?editors=1010)
 
 <br>
 
