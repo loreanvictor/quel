@@ -1,10 +1,10 @@
 import { Source } from '../source'
-import { Signal } from '../signal'
+import { Subject } from '../subject'
 
 
 describe(Source, () => {
   test('emits', () => {
-    const signal = new Signal()
+    const signal = new Subject<void>()
     const source = new Source(emit => {
       let i = 0
       const handler = () => emit(++i)
@@ -16,15 +16,15 @@ describe(Source, () => {
     const listener = jest.fn()
     source.get(listener)
 
-    signal.send()
+    signal.set()
     expect(listener).toHaveBeenCalledWith(1)
 
-    signal.send()
+    signal.set()
     expect(listener).toHaveBeenCalledWith(2)
   })
 
   test('removes listeners.', () => {
-    const signal = new Signal()
+    const signal = new Subject<void>()
     const source = new Source(emit => {
       let i = 0
       const handler = () => emit(++i)
@@ -35,18 +35,18 @@ describe(Source, () => {
 
     const listener = jest.fn()
     source.get(listener)
-    signal.send()
+    signal.set()
     expect(listener).toHaveBeenCalledWith(1)
 
     listener.mockReset()
 
     source.remove(listener)
-    signal.send()
+    signal.set()
     expect(listener).not.toHaveBeenCalled()
   })
 
   test('clears up.', () => {
-    const signal = new Signal()
+    const signal = new Subject<void>()
     const source = new Source(emit => {
       let i = 0
       const handler = () => emit(++i)
@@ -57,13 +57,13 @@ describe(Source, () => {
 
     const listener = jest.fn()
     source.get(listener)
-    signal.send()
+    signal.set()
     expect(listener).toHaveBeenCalledWith(1)
 
     listener.mockReset()
 
     source.stop()
-    signal.send()
+    signal.set()
     expect(listener).not.toHaveBeenCalled()
   })
 
@@ -105,5 +105,12 @@ describe(Source, () => {
     source.stop()
     await sleep(5)
     expect(source.get()).toBe(3)
+  })
+
+  test('can wait for it to stop.', async () => {
+    const source = new Source()
+    setTimeout(() => source.stop(), 10)
+
+    await source.stops()
   })
 })

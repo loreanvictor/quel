@@ -1,5 +1,5 @@
 import {
-  Source, Signal, Timer, Subject, EventSource, InputSource,
+  Source, Timer, Subject, EventSource, InputSource,
   noop, observe, from,
   Listener, Cleanup, Producer, SourceLike, ExprFn, Observable, Track, SKIP,
 } from '../'
@@ -7,7 +7,6 @@ import {
 
 test('exports stuff.', () => {
   expect(Source).toBeDefined()
-  expect(Signal).toBeDefined()
   expect(Timer).toBeDefined()
   expect(Subject).toBeDefined()
   expect(EventSource).toBeDefined()

@@ -9,6 +9,7 @@ export interface SourceLike<T> {
   get(listener?: Listener<T>): T | undefined
   remove(listener: Listener<T>): void
   stop(): void
+  stops(): Promise<void>
 }
 
 export const SKIP = Symbol()

@@ -3,9 +3,11 @@ import { Listener, Producer, Cleanup, SourceLike } from './types'
 
 
 export class Source<T> implements SourceLike<T> {
-  subs: Listener<T>[] = []
+  subs: Listener<T>[] | undefined = undefined
   last: T | undefined = undefined
   cleanup: Cleanup | undefined
+  _stops: Promise<void> | undefined
+  _stopsResolve: (() => void) | undefined
 
   constructor(
     readonly producer: Producer<T> = noop
@@ -19,14 +21,17 @@ export class Source<T> implements SourceLike<T> {
 
   protected emit(val: T) {
     this.last = val
-    const cpy = this.subs.slice()
-    for(let i = 0; i < cpy.length; i++) {
-      cpy[i]!(val)
+    if (this.subs) {
+      const cpy = this.subs.slice()
+      for(let i = 0; i < cpy.length; i++) {
+        cpy[i]!(val)
+      }
     }
   }
 
   get(listener?: Listener<T>) {
-    if (listener && this.subs.indexOf(listener) === -1) {
+    if (listener) {
+      this.subs ??= []
       this.subs.push(listener)
     }
 
@@ -34,9 +39,11 @@ export class Source<T> implements SourceLike<T> {
   }
 
   remove(listener: Listener<T>) {
-    const i = this.subs.indexOf(listener)
-    if (i !== -1) {
-      this.subs.splice(i, 1)
+    if (this.subs) {
+      const i = this.subs.indexOf(listener)
+      if (i !== -1) {
+        this.subs.splice(i, 1)
+      }
     }
   }
 
@@ -45,6 +52,18 @@ export class Source<T> implements SourceLike<T> {
       this.cleanup()
     }
 
-    this.subs.length = 0
+    if (this.subs) {
+      this.subs.length = 0
+    }
+
+    if (this._stops) {
+      this._stopsResolve!()
+    }
+  }
+
+  stops() {
+    this._stops ??= new Promise(resolve => this._stopsResolve = resolve)
+
+    return this._stops
   }
 }
