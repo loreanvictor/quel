@@ -279,7 +279,7 @@ const expr = ($: Track) => $(a) * 2
 
 # Features
 
-🧩 [**quel**](.) has a minimal API surface (the whole package [is ~1.1KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
+🧩 [**quel**](.) has a minimal API surface (the whole package [is ~1.3KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
 
 ```js
 // combine two sources:
