@@ -1,4 +1,4 @@
-import { Listener, SourceLike, Observable, ExprFn, SKIP } from './types'
+import { Listener, SourceLike, Observable, ExprFn, SKIP, STOP, ExprResultSync } from './types'
 import { Source } from './source'
 
 
@@ -63,16 +63,18 @@ export class Observation<T> extends Source<T> {
           return
         }
 
-        if (this.clean() && res !== SKIP) {
-          this.emit(res)
-        }
+        this.emit(res)
       })
     } else {
-      const res = _res
+      this.emit(_res)
+    }
+  }
 
-      if (this.clean() && res !== SKIP) {
-        this.emit(res)
-      }
+  protected override emit(res: ExprResultSync<T>) {
+    if (this.clean() && res !== SKIP && res !== STOP) {
+      super.emit(res)
+    } else if (res === STOP) {
+      this.stop()
     }
   }
 

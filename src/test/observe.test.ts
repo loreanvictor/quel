@@ -1,6 +1,6 @@
 // import sleep from 'sleep-promise'
 import { Subject } from '../subject'
-import { Track } from '../types'
+import { SKIP, STOP, Track } from '../types'
 import { observe } from '../observe'
 
 
@@ -159,5 +159,26 @@ describe(observe, () => {
     expect(abort).toHaveBeenCalledTimes(1)
     a.set(2)
     expect(abort).toHaveBeenCalledTimes(2)
+  })
+
+  test('can be stopped.', () => {
+    const cb = jest.fn()
+
+    const a = new Subject<number>()
+    const o = ($: Track) => $(a) ? ($(a)! <= 3 ? $(a) : STOP) : SKIP
+    observe($ => $(o) ? cb($(o)) : SKIP)
+
+    a.set(1)
+    a.set(2)
+    a.set(3)
+    a.set(4)
+    a.set(5)
+
+    expect(cb).toHaveBeenCalledTimes(3)
+    expect(cb).toHaveBeenCalledWith(1)
+    expect(cb).toHaveBeenCalledWith(2)
+    expect(cb).toHaveBeenCalledWith(3)
+    expect(cb).not.toHaveBeenCalledWith(4)
+    expect(cb).not.toHaveBeenCalledWith(5)
   })
 })

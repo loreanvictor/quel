@@ -162,6 +162,17 @@ Flatten higher-order sources:
 const variableTimer = $ => new Timer($(input))
 const message = $ => 'elapsed: ' + $($(timer))
 ```
+Stop the expression:
+```js
+import { STOP } from 'quel'
+
+let count = 0
+const take5 = $ => {
+  if (count++ > 5) return STOP
+
+  return $(src)
+}
+```
 
 <br>
 
@@ -331,15 +342,19 @@ async $ => {
 $ => $($(src))
 ```
 ```js
+// filter a source
+$ => $(src) % 2 === 0 ? $(src) : SKIP
+```
+```js
+// take until other source emits a value
+$ => !$(notifier) ? $(src) : STOP
+```
+```js
 // merge sources
 new Source(emit => {
   const obs = sources.map(src => observe($ => emit($(src))))
   return () => obs.forEach(ob => ob.stop())
 })
-```
-```js
-// filter a source
-$ => $(src) % 2 === 0 ? $(src) : SKIP
 ```
 ```js
 // throttle
