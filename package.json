@@ -1,6 +1,6 @@
 {
   "name": "quel",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Expression-based reactive library for hot listenables",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",

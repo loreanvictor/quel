@@ -2,9 +2,9 @@
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
 
 [![tests](https://github.com/loreanvictor/quel/actions/workflows/test.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/test.yml)
-[![coverage](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml)
 [![version](https://img.shields.io/npm/v/quel?logo=npm)](https://www.npmjs.com/package/quel)
-![types](https://img.shields.io/npm/types/quel)
+[![types](https://img.shields.io/npm/types/quel)](./src/types.ts)
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/quel?color=black&label=size)](https://bundlephobia.com/package/quel@latest)
 
 _Imperative Reactive Programming for JavaScript_
 
@@ -68,6 +68,19 @@ observe($ => {
 })
 ```
 [👉 Try it out!](https://stackblitz.com/edit/js-4wppcl?file=index.js)
+
+<br>
+
+# Installation
+
+On [node](https://nodejs.org/en/):
+```bash
+npm i quel
+```
+On browser (or [deno](https://deno.land)):
+```js
+import { from, observe } from 'https://esm.sh/quel'
+```
 
 <br>
 
@@ -266,7 +279,7 @@ const expr = ($: Track) => $(a) * 2
 
 # Features
 
-🧩 [**quel**](.) has a minimal API surface (the whole package [is ~1.1KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
+🧩 [**quel**](.) has a minimal API surface (the whole package [is ~1.3KB](https://bundlephobia.com/package/quel@0.1.5)), and relies on composability instead of providng tons of operators / helper methods:
 
 ```js
 // combine two sources:
@@ -362,3 +375,51 @@ observe($ => {
 
 <br>
 
+# Contribution
+
+You need [node](https://nodejs.org/en/), [NPM](https://www.npmjs.com) to start and [git](https://git-scm.com) to start.
+
+```bash
+# clone the code
+git clone git@github.com:loreanvictor/quel.git
+```
+```bash
+# install stuff
+npm i
+```
+
+Make sure all checks are successful on your PRs. This includes all tests passing, high code coverage, correct typings and abiding all [the linting rules](https://github.com/loreanvictor/quel/blob/main/.eslintrc). The code is typed with [TypeScript](https://www.typescriptlang.org), [Jest](https://jestjs.io) is used for testing and coverage reports, [ESLint](https://eslint.org) and [TypeScript ESLint](https://typescript-eslint.io) are used for linting. Subsequently, IDE integrations for TypeScript and ESLint would make your life much easier (for example, [VSCode](https://code.visualstudio.com) supports TypeScript out of the box and has [this nice ESLint plugin](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)), but you could also use the following commands:
+
+```bash
+# run tests
+npm test
+```
+```bash
+# check code coverage
+npm run coverage
+```
+```bash
+# run linter
+npm run lint
+```
+```bash
+# run type checker
+npm run typecheck
+```
+
+You can also use the following commands to run performance benchmarks:
+
+```bash
+# run all benchmarks
+npm run bench
+```
+```bash
+# run performance benchmarks
+npm run bench:perf
+```
+```bash
+# run memory benchmarks
+npm run bench:mem
+```
+
+<br><br>
