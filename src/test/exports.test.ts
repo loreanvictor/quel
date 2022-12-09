@@ -1,6 +1,6 @@
 import {
   Source, Timer, Subject, EventSource, InputSource,
-  noop, observe, from,
+  noop, observe, iterate, from,
   Listener, Cleanup, Producer, SourceLike, ExprFn, Observable, Track, SKIP,
 } from '../'
 
@@ -14,6 +14,7 @@ test('exports stuff.', () => {
 
   expect(noop).toBeDefined()
   expect(observe).toBeDefined()
+  expect(iterate).toBeDefined()
   expect(from).toBeDefined()
 
   expect(SKIP).toBeDefined()
