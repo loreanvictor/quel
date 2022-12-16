@@ -148,13 +148,18 @@ const odd = $ => $(a) % 2 === 0 ? SKIP : $(a)
 Do async operations:
 ```js
 const response = async $ => {
-  const query = $(input)
   await sleep(200)
   
-  const res = await fetch(`https://my.api/q?=${query}`)
-  const json = await res.json()
-  
-  return res
+  if ($(query)) {
+    try {
+      const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + $(query))
+      const json = await res.json()
+
+      return JSON.stringify(json, null, 2)
+    } catch {
+      return 'Could not find Pokemon'
+    }
+  }
 }
 ```
 Flatten higher-order sources:
@@ -223,11 +228,10 @@ Expression functions might get aborted mid-execution. You can handle those event
 let ctrl = new AbortController()
 
 const data = observe(async $ => {
-  const q = $(input)
   await sleep(200)
   
   // 👇 pass abort controller signal to fetch to cancel mid-flight requests
-  const res = await fetch('https://my.api/?q=' + q, {
+  const res = await fetch('https://my.api/?q=' + $(input), {
     signal: ctrl.signal
   })
 
@@ -266,17 +270,20 @@ for await (const i of iterate(timer)) {
 
 ### Cleanup
 
+Expressions cleanup automatically when all their tracked sources are stopped. They also lazy-check if all previously tracked sources
+are still being tracked when they emit (or they stop) to do proper cleanup.
+
 Manually cleanup:
 
 ```js
 const timer = new Timer(1000)
 const effect = observe($ => console.log($(timer)))
 
-// 👇 this just stops the side-effect, the timer keeps going ...
-effect.stop()
-
-// 👇 this stops the timer. you don't need to stop the effect manually.
+// 👇 this stops the timer and the effect
 timer.stop()
+
+// 👇 this just stops the side-effect, the timer keeps going.
+effect.stop()
 ```
 
 Specify cleanup code in custom sources:
@@ -331,10 +338,8 @@ $ => $(a) + $(b)
 ```js
 // debounce:
 async $ => {
-  const val = $(src)
   await sleep(1000)
-  
-  // ...
+  return $(src)
 }
 ```
 ```js
