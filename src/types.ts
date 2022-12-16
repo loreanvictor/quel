@@ -10,6 +10,15 @@ export interface SourceLike<T> {
   remove(listener: Listener<T>): void
   stop(): void
   stops(): Promise<void>
+  stopped: boolean
+}
+
+export function isSourceLike<T>(val: any): val is SourceLike<T> {
+  return val &&
+    typeof val.get === 'function' &&
+    typeof val.remove === 'function' &&
+    typeof val.stop === 'function' &&
+    typeof val.stops === 'function'
 }
 
 export const SKIP = Symbol()

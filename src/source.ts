@@ -8,6 +8,7 @@ export class Source<T> implements SourceLike<T> {
   cleanup: Cleanup | undefined
   _stops: Promise<void> | undefined
   _stopsResolve: (() => void) | undefined
+  _stopped = false
 
   constructor(
     readonly producer: Producer<T> = noop
@@ -56,6 +57,8 @@ export class Source<T> implements SourceLike<T> {
       this.subs.length = 0
     }
 
+    this._stopped = true
+
     if (this._stops) {
       this._stopsResolve!()
     }
@@ -65,5 +68,9 @@ export class Source<T> implements SourceLike<T> {
     this._stops ??= new Promise(resolve => this._stopsResolve = resolve)
 
     return this._stops
+  }
+
+  get stopped() {
+    return this._stopped
   }
 }

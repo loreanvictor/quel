@@ -1,14 +1,14 @@
-import { from, observe, Timer } from '../src'
+import { from, observe, Timer, SKIP } from '../src'
 import sleep from 'sleep-promise'
 
 const div$ = document.querySelector('div')
 const input = from(document.querySelector('input'))
+const rate = $ =>  parseInt($(input) ?? 200)
 
 const timer = async $ => {
-  const rate = parseInt($(input) ?? 100)
   await sleep(200)
 
-  return new Timer(rate)
+  return $(rate) ? new Timer($(rate)) : SKIP
 }
 
 observe($ => {

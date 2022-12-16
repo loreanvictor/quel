@@ -16,7 +16,12 @@
     "quotes": ["warn", "single", {"avoidEscape": true}],
     "curly": "warn",
     "no-unused-vars": "off",
-    "no-unused-expressions": "warn",
+    "no-unused-expressions": [
+      "error", {
+        "allowShortCircuit": true,
+        "allowTernary": true
+      }
+    ],
     "no-shadow": "warn",
     "prefer-const": "warn",
     "eqeqeq": "warn",

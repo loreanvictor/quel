@@ -7,12 +7,12 @@ describe(iterate, () => {
     const cb = jest.fn()
 
     const t = new Timer(10)
-    setTimeout(() => t.stop(), 50)
+    setTimeout(() => t.stop(), 51)
 
     for await (const i of iterate(t)) {
       cb(i)
     }
 
-    expect(cb).toHaveBeenCalledTimes(4)
+    expect(cb).toHaveBeenCalledWith(1)
   })
 })

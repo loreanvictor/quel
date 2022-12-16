@@ -53,13 +53,13 @@ import { from, observe, Timer } from 'quel'
 
 const div$ = document.querySelector('div')
 const input = from(document.querySelector('input'))
+const rate = $ => parseInt($(input) ?? 100)
 
 const timer = async $ => {
-  const rate = parseInt($(input) ?? 100)
   await sleep(200)
 
   // 👇 a timer is a source itself, we have a higher-level event source here!
-  return new Timer(rate)
+  return $(rate) && new Timer($(rate))
 }
 
 observe($ => {

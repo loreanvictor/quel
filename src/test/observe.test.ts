@@ -47,6 +47,25 @@ describe(observe, () => {
     expect(cb).not.toHaveBeenCalled()
   })
 
+  test('stops previously returned sources.', async () => {
+    const cb = jest.fn()
+
+    const a = new Subject<Subject<number>>()
+    const b = new Subject<number>()
+    const c = new Subject<number>()
+
+    b.stops().then(cb)
+
+    observe($ => $(a))
+
+    a.set(b)
+    a.set(c)
+
+    await Promise.resolve()
+
+    expect(cb).toHaveBeenCalled()
+  })
+
   test('cleans up.', () => {
     const cb = jest.fn()
 
@@ -180,5 +199,33 @@ describe(observe, () => {
     expect(cb).toHaveBeenCalledWith(3)
     expect(cb).not.toHaveBeenCalledWith(4)
     expect(cb).not.toHaveBeenCalledWith(5)
+  })
+
+  test('stops when all tracked sources stop.', async () => {
+    const cb = jest.fn()
+    const cb2 = jest.fn()
+
+    const a = new Subject<number>()
+    const b = new Subject<number>()
+
+    observe($ => cb($(a)! + $(b)!)).stops().then(cb2)
+
+    a.set(1)
+    b.set(2)
+
+    expect(cb).toHaveBeenCalledWith(3)
+
+    b.stop()
+    await Promise.resolve()
+
+    expect(cb2).not.toHaveBeenCalled()
+
+    a.set(3)
+    expect(cb).toHaveBeenCalledWith(5)
+
+    a.stop()
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(cb2).toHaveBeenCalled()
   })
 })

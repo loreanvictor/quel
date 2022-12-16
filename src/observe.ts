@@ -1,4 +1,4 @@
-import { Listener, SourceLike, Observable, ExprFn, SKIP, STOP, ExprResultSync } from './types'
+import { Listener, SourceLike, isSourceLike, Observable, ExprFn, SKIP, STOP, ExprResultSync } from './types'
 import { Source } from './source'
 
 
@@ -44,8 +44,10 @@ export class Observation<T> extends Source<T> {
   }
 
   protected nextToken() {
-    // eslint-disable-next-line no-unused-expressions
-    this.syncToken > 0 && this.abort && this.abort()
+    if (this.syncToken > 0) {
+      this.abort && this.abort()
+      isSourceLike(this.last) && this.last.stop()
+    }
 
     /* istanbul ignore next */
     return ++this.syncToken > 10e12 ? this.syncToken = 1 : this.syncToken
@@ -87,13 +89,21 @@ export class Observation<T> extends Source<T> {
       this.cleanCandidate = undefined
     }
 
-    if (!this.tracked.has(src)) {
+    if (!src.stopped && !this.tracked.has(src)) {
       const handler = () => this.run(src)
       this.tracked.set(src, handler)
+      src.stops().then(() => this.checkStop(src))
 
       return src.get(handler)
     } else {
       return src.get()
+    }
+  }
+
+  protected checkStop(src: SourceLike<unknown>) {
+    this.tracked.delete(src)
+    if (this.tracked.size === 0) {
+      this.stop()
     }
   }
 }
