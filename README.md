@@ -162,6 +162,8 @@ const response = async $ => {
   }
 }
 ```
+[👉 Try it out!](https://stackblitz.com/edit/js-3jpams?file=index.js)
+
 Flatten higher-order sources:
 ```js
 const variableTimer = $ => new Timer($(input))
