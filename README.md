@@ -71,6 +71,21 @@ observe($ => {
 
 <br>
 
+# Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Sources](#sources)
+  - [Expressions](#expressions)
+  - [Observation](#observation)
+  - [Iteration](#iteration)
+  - [Cleanup](#cleanup)
+  - [Typing](#typing)
+- [Features](#features)
+- [Contribution](#contribution)
+
+<br>
+
 # Installation
 
 On [node](https://nodejs.org/en/):
