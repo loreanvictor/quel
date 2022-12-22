@@ -82,6 +82,7 @@ observe($ => {
   - [Cleanup](#cleanup)
   - [Typing](#typing)
 - [Features](#features)
+- [Related Work](#related-work)
 - [Contribution](#contribution)
 
 <br>
