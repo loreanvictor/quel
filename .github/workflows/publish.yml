@@ -24,7 +24,7 @@ jobs:
         run: npm run lint
 
       - name: Fix README for NPM
-        run: tail -n +2 README.md > README.md.tmp && mv README.md.tmp README.md
+        run: sed -i.tmp -e '10d' README.md && rm README.md.tmp
       
       - name: Publish
         uses: JS-DevTools/npm-publish@v1
