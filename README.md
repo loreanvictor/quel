@@ -15,8 +15,6 @@ _Imperative Reactive Programming for JavaScript_
 ```bash
 npm i quel
 ```
-> ⚠️ **EXPERIMENTAL**, not for use on production
-
 
 <br>
 
@@ -40,7 +38,12 @@ const words = $ => $(input)?.split(' ').length ?? 0
 // 👇 this is a side effect executed when the computed values change
 observe($ => div$.textContent = `${$(chars)} chars, ${$(words)} words`)
 ```
-[👉 Try it out!](https://stackblitz.com/edit/js-jh6zt2?file=index.html,index.js)
+
+<div align="right">
+
+[**▷ TRY IT**](https://stackblitz.com/edit/js-jh6zt2?file=index.html,index.js)
+
+</div>
 
 <br>
 
@@ -71,7 +74,12 @@ observe($ => {
   div$.textContent = `elapsed: ${elapsed}`
 })
 ```
-[👉 Try it out!](https://stackblitz.com/edit/js-4wppcl?file=index.js)
+
+<div align="right">
+
+[**▷ TRY IT**](https://stackblitz.com/edit/js-4wppcl?file=index.js)
+
+</div>
 
 <br>
 
@@ -182,7 +190,12 @@ const response = async $ => {
   }
 }
 ```
-[👉 Try it out!](https://stackblitz.com/edit/js-3jpams?file=index.js)
+
+<div align="right">
+
+[**▷ TRY IT**](https://stackblitz.com/edit/js-3jpams?file=index.js)
+
+</div>
 
 Flatten higher-order sources:
 ```js
@@ -286,7 +299,12 @@ for await (const i of iterate(timer)) {
   console.log(i)
 }
 ```
-[👉 Try it out!](https://codepen.io/lorean_victor/pen/abKxbNw?editors=1010)
+
+<div align="right">
+
+[**▷ TRY IT**](https://codepen.io/lorean_victor/pen/abKxbNw?editors=1010)
+
+</div>
 
 <br>
 
