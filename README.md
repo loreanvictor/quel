@@ -1,10 +1,14 @@
+<div align="right">
+
+[![npm bundle size](https://img.shields.io/bundlephobia/minzip/quel?color=black&label=&style=flat-square)](https://bundlephobia.com/package/quel@latest)
+[![types](https://img.shields.io/npm/types/quel?label=&color=black&style=flat-square)](./src/types.ts)
+[![version](https://img.shields.io/npm/v/quel?label=&color=black&style=flat-square)](https://www.npmjs.com/package/quel)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/loreanvictor/quel/coverage.yml?label=%20&style=flat-square)](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml)
+
+</div>
+
 <img src="misc/dark.svg#gh-dark-mode-only" height="96px"/>
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
-
-[![tests](https://github.com/loreanvictor/quel/actions/workflows/test.yml/badge.svg)](https://github.com/loreanvictor/quel/actions/workflows/test.yml)
-[![version](https://img.shields.io/npm/v/quel?logo=npm)](https://www.npmjs.com/package/quel)
-[![types](https://img.shields.io/npm/types/quel)](./src/types.ts)
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/quel?color=black&label=size)](https://bundlephobia.com/package/quel@latest)
 
 _Imperative Reactive Programming for JavaScript_
 
