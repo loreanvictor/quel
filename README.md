@@ -114,7 +114,7 @@ import { from, observe } from 'https://esm.sh/quel'
 
 # Usage
 
-### Sources
+## Sources
 
 Create a subject (whose value you can manually set at any time):
 ```js
@@ -161,7 +161,7 @@ await src.stops()
 
 <br>
 
-### Expressions
+## Expressions
 
 Combine two sources:
 ```js
@@ -243,7 +243,7 @@ const take5 = $ => {
 > ```
 <br>
 
-### Observation
+## Observation
 
 Run side effects:
 ```js
@@ -279,7 +279,7 @@ const data = observe(async $ => {
 
 <br>
 
-### Iteration
+## Iteration
 
 Iterate on values of a source using `iterate()`:
 ```js
@@ -308,7 +308,7 @@ for await (const i of iterate(timer)) {
 
 <br>
 
-### Cleanup
+## Cleanup
 
 Expressions cleanup automatically when all their tracked sources are stopped. They also lazy-check if all previously tracked sources
 are still being tracked when they emit (or they stop) to do proper cleanup.
@@ -353,7 +353,7 @@ const asyncTimer = new Source(async (emit, finalize) => {
 
 <br>
 
-### Typing
+## Typing
 
 TypeScript wouldn't be able to infer proper types for expressions. To resolve this issue, use `Track` type:
 
