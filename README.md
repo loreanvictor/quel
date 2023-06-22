@@ -10,7 +10,7 @@
 <img src="misc/dark.svg#gh-dark-mode-only" height="96px"/>
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
 
-_Imperative Reactive Programming for JavaScript_
+_Handle Change with Ease_ <sup>in JavaScript</sup>
 
 ```bash
 npm i quel
@@ -18,9 +18,12 @@ npm i quel
 
 <br>
 
+**Change** happens when a button is clicked, when value of an input is changed as the user types, when the response to a request arrives, when data is pushed via some socket, when time passes, etc. [**quel**](.) helps you encapsulate sources of change, and combine, process and react to the resulting changing values via simple expressions and observations.
+<!--
 Most applications written in JavaScript require some degree of [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). This is either achieved via domain-specific frameworks (such as [React](https://reactjs.org)) or general-purpose libraries like [RxJS](https://rxjs.dev), which are centered around a [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) paradigm.
 
 [**quel**](.) is a general-purpose library for reactive programming with an imperative style, resulting in code more in line with most other JavaScript code, and easier to read, write, understand and maintain. 
+-->
 
 ```js
 import { from, observe } from 'quel'
@@ -28,7 +31,7 @@ import { from, observe } from 'quel'
 
 const div$ = document.querySelector('div')
 
-// 👇 this is an event source
+// 👇 this is a source of change, as value of the input changes
 const input = from(document.querySelector('textarea'))
 
 // 👇 these are computed values based on that source
@@ -52,7 +55,7 @@ A more involved example:
 ```js
 //
 // this code creates a timer whose rate changes
-// based on values from an input.
+// based on the value of an input
 //
 
 import { from, observe, Timer } from 'quel'
@@ -62,14 +65,22 @@ const div$ = document.querySelector('div')
 const input = from(document.querySelector('input'))
 const rate = $ => parseInt($(input) ?? 100)
 
+//
+// 👇 as the rate of the timer changes, so does the timer itself.
+//    with a constant rate, the timer would be a simple source of change,
+//    with changing rates, the timer becomes a "higher-order" source.
+//
 const timer = async $ => {
   await sleep(200)
-
-  // 👇 a timer is a source itself, we have a higher-level event source here!
   return $(rate) && new Timer($(rate))
 }
 
 observe($ => {
+  //
+  // 👇 since `timer` is a higher-order source, `$(timer)` would
+  //     yield the latest timer, and `$($(timer))` would yield the latest
+  //     value of the latest timer, which is what we want to display.
+  //
   const elapsed = $($(timer)) ?? '-'
   div$.textContent = `elapsed: ${elapsed}`
 })
@@ -113,6 +124,13 @@ import { from, observe } from 'https://esm.sh/quel'
 <br>
 
 # Usage
+
+Working with [**quel**](.) involves four stages:
+1. Encapsulate (or create) [sources of change](#sources),
+2. Process and combine the these changing values using [functions & expressions](#expressions),
+3. [Observe](#observation) these changing values and react to them
+   (or [iterate](#iteration) over them),
+4. [Clean up](#cleanup) the sources, releasing resources (e.g. stop listening to user events, close an open socket, etc.).
 
 ## Sources
 
