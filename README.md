@@ -236,8 +236,8 @@ const take5 = $ => {
 
 > ℹ️ **IMPORTANT**
 >
-> The `$` function, passed to expressions, _tracks_ the latest value of a given source. Expressions
-> are then re-evaluated every time a change in some source results in some new value.
+> The `$` function, passed to expressions, _tracks_ and returns the latest value of a given source. Expressions
+> are then re-evaluated every time a change in some tracked source results in some new value.
 > This means that the sources you track must remain the same when the expression is re-evaluated.
 >
 > **DO NOT** create sources you want to track inside an expression:
