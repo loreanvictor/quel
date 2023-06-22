@@ -77,9 +77,9 @@ const timer = async $ => {
 
 observe($ => {
   //
-  // 👇 since `timer` is a higher-order source, `$(timer)` would
-  //     yield the latest timer, and `$($(timer))` would yield the latest
-  //     value of the latest timer, which is what we want to display.
+  // 👇 `$(timer)` would yield the latest timer, 
+  //     and `$($(timer))` would yield the latest
+  //     value of that timer, which is what we want to display.
   //
   const elapsed = $($(timer)) ?? '-'
   div$.textContent = `elapsed: ${elapsed}`
@@ -236,11 +236,12 @@ const take5 = $ => {
 
 > ℹ️ **IMPORTANT**
 >
-> Only pass _stable references_ to the track function `$`. Expressions are re-run whenever the tracked
-> sources emit a new value, so if sources they are tracking aren't stable with regards to execution of the
-> expression itself, they will be tracking new sources each time, resulting in behavior that is most probably
-> not intended.
+> The `$` function (e.g. the _track function_), passed to expressions, _tracks_ the latest value of a given source. Expressions
+> are then re-evaluated every time a change in some source results in some new value.
+> This means that the sources you track must remain the same when the expression is re-evaluated.
 >
+> **DO NOT** create sources you want to track inside an expression:
+> 
 > ```js
 > // 👇 this is WRONG ❌
 > const computed = $ => $(new Timer(1000)) * 2
@@ -251,13 +252,25 @@ const take5 = $ => {
 > const computed = $ => $(timer) * 2
 > ```
 >
-> The track function `$` itself returns a stable reference, so you can safely chain it for flattening
-> higher-order sources:
-> ```js
-> const timer = $ => new Timer($(rate))
+> <br/>
 > 
-> // 👇 this is OK, as $(timer) is a stable reference
-> const msg = 'elapsed: ' + $($(timer))
+> You _CAN_ create new sources inside an expression and return them (without tracking) them, creating a higher-order source:
+> ```js
+> //
+> // this is OK ✅
+> // `timer` is a source of changing timers, 
+> // who themselves are a source of changing numbers.
+> //
+> const timer = $ => new Timer($(rate))
+> ```
+> ```js
+> //
+> // this is OK ✅
+> // `$(timer)` returns the latest timer as long as a new timer
+> // is not created (in response to a change in `rate`), so this
+> // expression is re-evaluated only when it needs to.
+> //
+> const msg = $ => 'elapsed: ' + $($(timer))
 > ```
 <br>
 
@@ -276,7 +289,7 @@ const y = observe($ => $(x) * 2)
 console.log(y.get())
 ```
 
-Expression functions might get aborted mid-execution. You can handle those events by passing a second argument to `observe()`:
+Async expressions might get aborted mid-execution. You can handle those events by passing a second argument to `observe()`:
 ```js
 let ctrl = new AbortController()
 
