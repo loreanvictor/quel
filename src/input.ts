@@ -10,6 +10,8 @@ export class InputSource extends Source<string> {
       const handler = (evt: Event) => emit((evt.target as HTMLInputElement).value)
       addListener(node, 'input', handler)
 
+      emit(node.value)
+
       return () => removeListener(node, 'input', handler)
     })
   }

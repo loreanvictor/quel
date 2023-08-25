@@ -3,6 +3,8 @@
 
 import { testRender } from 'test-callbag-jsx'
 import { InputSource } from '../input'
+import { observe } from '../observe'
+import { Track } from '../types'
 
 
 describe(InputSource, () => {
@@ -43,6 +45,18 @@ describe(InputSource, () => {
 
       $('input').type('bar')
       expect(cb).not.toHaveBeenCalled()
+    })
+  })
+
+  test('initial value is also observable.', () => {
+    testRender((renderer, {render, $}) => {
+      render(<input type='text' value='foo'/>)
+      const src = new InputSource($('input').resolveOne()! as HTMLInputElement)
+      const cb = jest.fn()
+
+      observe((_: Track) => cb(_(src)))
+
+      expect(cb).toHaveBeenCalledWith('foo')
     })
   })
 })
