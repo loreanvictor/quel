@@ -12,14 +12,14 @@ export function from<EventName extends keyof EventMap>(
 ): EventSource<EventName>
 export function from<EventName extends keyof EventMap>(
   node: EventTarget,
-  name: EventName = 'click' as EventName,
+  name?: EventName,
   options?: boolean | AddEventListenerOptions,
 ): InputSource | EventSource<EventName> {
-  if ((node as any).tagName && (
+  if (!name && (node as any).tagName && (
     (node as any).tagName === 'INPUT' || (node as any).tagName === 'TEXTAREA'
   )) {
     return new InputSource(node as HTMLInputElement)
   } else {
-    return new EventSource(node, name, options)
+    return new EventSource(node, name ?? 'click' as EventName, options)
   }
 }

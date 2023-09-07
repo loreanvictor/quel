@@ -54,4 +54,19 @@ describe(from, () => {
       expect(cb).toHaveBeenCalledWith('foo')
     })
   })
+
+  test('listens to custom events on textareas.', () => {
+    testRender((renderer, {render, $}) => {
+      render(<textarea/>)
+      const src = from($('textarea').resolveOne()!, 'click')
+      const cb = jest.fn()
+
+      src.get(cb)
+
+      expect(cb).not.toHaveBeenCalled()
+
+      $('textarea').click()
+      expect(cb).toHaveBeenCalled()
+    })
+  })
 })
