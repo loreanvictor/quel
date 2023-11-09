@@ -1,6 +1,6 @@
 <div align="right">
 
-[![npm bundle size](https://img.shields.io/bundlephobia/minzip/quel?color=black&label=&style=flat-square)](https://bundlephobia.com/package/quel@latest)
+[![npm package minimized gzipped size)](https://img.shields.io/bundlejs/size/quel?style=flat-square&label=%20&color=black)](https://bundlejs.com/?q=quel)
 [![types](https://img.shields.io/npm/types/quel?label=&color=black&style=flat-square)](./src/types.ts)
 [![version](https://img.shields.io/npm/v/quel?label=&color=black&style=flat-square)](https://www.npmjs.com/package/quel)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/loreanvictor/quel/coverage.yml?label=%20&style=flat-square)](https://github.com/loreanvictor/quel/actions/workflows/coverage.yml)
