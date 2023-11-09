@@ -167,17 +167,35 @@ describe(observe, () => {
     expect(cb).toHaveBeenCalledTimes(3)
   })
 
-  test('accepts an abort listener.', () => {
+  test('accepts an abort listener.', async () => {
     const abort = jest.fn()
 
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
     const a = new Subject<number>()
-    observe($ => $(a)! * 2, abort)
+    observe(async $ => {
+      await delay(1)
+
+      return $(a)! * 2
+    }, abort)
 
     expect(abort).not.toHaveBeenCalled()
     a.set(1)
-    expect(abort).toHaveBeenCalledTimes(1)
+    await delay(2)
     a.set(2)
-    expect(abort).toHaveBeenCalledTimes(2)
+    // sequential runs, no abort.
+    expect(abort).toHaveBeenCalledTimes(0)
+    await delay(2)
+    // make sure still no abort after the last run finishes
+    expect(abort).toHaveBeenCalledTimes(0)
+
+    a.set(3)
+    a.set(4)
+    // parallel runs, first one is aborted
+    expect(abort).toHaveBeenCalledTimes(1)
+    await delay(2)
+    // still the same abort
+    expect(abort).toHaveBeenCalledTimes(1)
   })
 
   test('can be stopped.', () => {

@@ -10,20 +10,13 @@
 <img src="misc/dark.svg#gh-dark-mode-only" height="96px"/>
 <img src="misc/light.svg#gh-light-mode-only" height="96px"/>
 
-_Handle Change with Ease_ <sup>in JavaScript</sup>
+_Reactive Expressions for JavaScript_
 
 ```bash
 npm i quel
 ```
 
-<br>
-
-**Change** happens when a button is clicked, when value of an input is changed as the user types, when the response to a request arrives, when data is pushed via some socket, when time passes, etc. [**quel**](.) helps you encapsulate sources of change, and combine, process and react to the resulting changing values via simple expressions and observations.
-<!--
-Most applications written in JavaScript require some degree of [reactive programming](https://en.wikipedia.org/wiki/Reactive_programming). This is either achieved via domain-specific frameworks (such as [React](https://reactjs.org)) or general-purpose libraries like [RxJS](https://rxjs.dev), which are centered around a [functional reactive programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) paradigm.
-
-[**quel**](.) is a general-purpose library for reactive programming with an imperative style, resulting in code more in line with most other JavaScript code, and easier to read, write, understand and maintain. 
--->
+**quel** is a tiny library for reactive programming in JavaScript. You can use it to write applications that react to user interactions, events, timers, web sockets, etc. using plain JavaScript expressions and functions.
 
 ```js
 import { from, observe } from 'quel'
@@ -50,7 +43,8 @@ observe($ => div$.textContent = `${$(chars)} chars, ${$(words)} words`)
 
 <br>
 
-A more involved example:
+**quel** focuses on simplicity and composability. Even for more complex use cases (such as higher-order reactive sources, bouncing events, etc.)
+it relies on native JavaScript features such async functions and combination, instead of operators, hooks, or other custom abstractions.
 
 ```js
 //
@@ -125,12 +119,12 @@ import { from, observe } from 'https://esm.sh/quel'
 
 # Usage
 
-Working with [**quel**](.) involves four stages:
+Working with [**quel**](.) involves four steps:
 1. Encapsulate (or create) [sources of change](#sources),
 2. Process and combine the these changing values using [functions & expressions](#expressions),
 3. [Observe](#observation) these changing values and react to them
    (or [iterate](#iteration) over them),
-4. [Clean up](#cleanup) the sources, releasing resources (e.g. stop listening to user events, close an open socket, etc.).
+4. [Clean up](#cleanup) the sources, releasing resources (e.g. stop a timer, remove an event listener, cloe a socket, etc.).
 
 ## Sources
 
@@ -181,7 +175,7 @@ await src.stops()
 
 ## Expressions
 
-Combine two sources:
+Combine two sources using simple _expression_ functions:
 ```js
 const sum = $ => $(a) + $(b)
 ```
@@ -191,7 +185,7 @@ import { SKIP } from 'quel'
 
 const odd = $ => $(a) % 2 === 0 ? SKIP : $(a)
 ```
-Do async operations:
+Expressions can be async:
 ```js
 const response = async $ => {
   await sleep(200)
@@ -544,5 +538,11 @@ npm run bench:perf
 # run memory benchmarks
 npm run bench:mem
 ```
+
+<br><br>
+
+<div align="center">
+<img src="chameleon.png" width="256px" />
+</div>
 
 <br><br>
