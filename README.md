@@ -420,6 +420,17 @@ $ => $(src) % 2 === 0 ? $(src) : SKIP
 $ => !$(notifier) ? $(src) : STOP
 ```
 ```js
+// batch emissions
+async $ => (await Promise.resolve(), $(src))
+```
+```js
+// batch with animation frames
+async $ => {
+  await Promise(resolve => requestAnimationFrame(resolve))
+  return $(src)
+}
+```
+```js
 // merge sources
 new Source(emit => {
   const obs = sources.map(src => observe($ => emit($(src))))
@@ -440,6 +451,7 @@ $ => {
   }
 }
 ```
+
 
 <br>
 
