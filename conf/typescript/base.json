@@ -5,7 +5,8 @@
 		"module": "esnext",
     "jsx": "react",
 		"esModuleInterop": true,
-		"noImplicitAny": false
+		"noImplicitAny": false,
+    "lib": ["esnext"]
   },
   "include": ["../../src"],
 	"exclude": ["../../**/test/**/*"]

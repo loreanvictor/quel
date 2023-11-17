@@ -1,3 +1,5 @@
+import sleep from 'sleep-promise'
+
 import { Source } from '../source'
 import { Subject } from '../subject'
 
@@ -68,8 +70,6 @@ describe(Source, () => {
   })
 
   test('can do async sources.', async () => {
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
     const source = new Source(async emit => {
       await sleep(10)
       emit(1)
@@ -83,8 +83,6 @@ describe(Source, () => {
   })
 
   test('can pass cleanup code in async functions too.', async () => {
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
     const source = new Source(async (emit, finalize) => {
       let i = 0
       let stopped = false
@@ -112,5 +110,44 @@ describe(Source, () => {
     setTimeout(() => source.stop(), 10)
 
     await source.stops()
+  })
+
+  test('is disposable.', async () => {
+    const cb = jest.fn()
+    const cb2 = jest.fn()
+
+    {
+      using src = new Source(emit => {
+        setTimeout(() => emit(1), 1)
+        setTimeout(() => emit(2), 5)
+
+        return cb
+      })
+
+      src.get(cb2)
+
+      await sleep(2)
+    }
+
+    await sleep(10)
+
+    expect(cb).toHaveBeenCalled()
+    expect(cb2).toHaveBeenCalledWith(1)
+    expect(cb2).not.toHaveBeenCalledWith(2)
+  })
+
+  test('provides disposable subscriptions.', () => {
+    const cb = jest.fn()
+    const src = new Subject<number>()
+
+    {
+      using _ = src.subscribe(cb)
+      src.set(1)
+    }
+
+    src.set(2)
+
+    expect(cb).toHaveBeenCalledWith(1)
+    expect(cb).not.toHaveBeenCalledWith(2)
   })
 })

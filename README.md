@@ -171,6 +171,13 @@ Wait for a source to be stopped:
 await src.stops()
 ```
 
+> In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you can safely
+> subscribe to a source:
+> ```js
+> using sub = src.subscribe(value => ...)
+> ```
+> Currently [TypeScript 5.2](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2-beta/#using-declarations-and-explicit-resource-management) or later supports `using` keyword.
+
 <br>
 
 ## Expressions
@@ -338,7 +345,7 @@ for await (const i of iterate(timer)) {
 Expressions cleanup automatically when all their tracked sources are stopped. They also lazy-check if all previously tracked sources
 are still being tracked when they emit (or they stop) to do proper cleanup.
 
-Manually cleanup:
+You need to manually clean up sources:
 
 ```js
 const timer = new Timer(1000)
@@ -351,7 +358,7 @@ timer.stop()
 effect.stop()
 ```
 
-Specify cleanup code in custom sources:
+Custom sources can return a cleanup function:
 ```js
 const myTimer = new Source(emit => {
   let i = 0
@@ -361,6 +368,7 @@ const myTimer = new Source(emit => {
   return () => clearInterval(interval)
 })
 ```
+Or use a callback to register the cleanup code:
 ```js
 // 👇 with async producers, use a callback to specify cleanup code
 const asyncTimer = new Source(async (emit, finalize) => {
@@ -375,6 +383,15 @@ const asyncTimer = new Source(async (emit, finalize) => {
   }
 })
 ```
+
+
+> In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you can safely
+> create sources without manually cleaning them up:
+> ```js
+> using timer = new Timer(1000)
+> ```
+> Currently [TypeScript 5.2](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2-beta/#using-declarations-and-explicit-resource-management) or later supports `using` keyword.
+
 
 <br>
 

@@ -1,3 +1,4 @@
+import { disposable } from './disposable'
 import { noop } from './noop'
 import { Listener, Producer, Cleanup, SourceLike } from './types'
 
@@ -39,6 +40,15 @@ export class Source<T> implements SourceLike<T> {
     return this.last
   }
 
+  subscribe(listener: Listener<T>) {
+    //
+    // can this be further optimised?
+    //
+    this.get(listener)
+
+    return disposable(() => this.remove(listener))
+  }
+
   remove(listener: Listener<T>) {
     if (this.subs) {
       const i = this.subs.indexOf(listener)
@@ -72,5 +82,9 @@ export class Source<T> implements SourceLike<T> {
 
   get stopped() {
     return this._stopped
+  }
+
+  [Symbol.dispose]() {
+    this.stop()
   }
 }

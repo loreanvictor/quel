@@ -3,8 +3,8 @@ import { Source } from './source'
 
 
 /**
- * turns an object, that might be an expression function or a source, into a source.
- * will attach the created source on the expression function and reuse it on subsequent calls.
+ * Turns an object, that might be an expression function or a source, into a source.
+ * Will attach the created source on the expression function and reuse it on subsequent calls.
  *
  * @param {Observable<T>} fn the object to normalize
  * @returns {SourceLike<T>}
@@ -41,7 +41,7 @@ function normalize<T>(fn: Observable<T>): SourceLike<T> {
 export class Observation<T> extends Source<T> {
   /**
    * A mapping of all tracked sources. For receiving the values of tracked sources,
-   * a handler is registered with them. this handler is stored in this map for cleanup.
+   * a handler is registered with them. This handler is stored in this map for cleanup.
    */
   tracked: Map<SourceLike<any>, Listener<any>> = new Map()
 
@@ -83,8 +83,11 @@ export class Observation<T> extends Source<T> {
   }
 
   /**
-   * cleans the clean candidate if present.
-   * @returns true if observation was already clean (no clean candidate), false otherwise.
+   * Cleans the observation if necessary. The observation is "dirty" if
+   * the last initiated run was initiated by a source that is no longer tracked
+   * by the expression. The observation will always be clean after calling this method.
+   *
+   * @returns {boolean} true if the observation is clean (before cleaning up), false otherwise.
    */
   protected clean() {
     if (this.cleanCandidate) {
@@ -120,7 +123,8 @@ export class Observation<T> extends Source<T> {
   }
 
   /**
-   *
+   * Runs the expression function and emits its result.
+   * @param {SourceLike<any>} src the source that initiated the run, if any.
    */
   protected run(src?: SourceLike<any>) {
     this.cleanCandidate = src
@@ -141,6 +145,16 @@ export class Observation<T> extends Source<T> {
     }
   }
 
+  /**
+   * Emits the result of the expression function if the observation is clean. The observation
+   * is "dirty" if the last initiated run was initiated by a source that is no longer tracked. This happens
+   * when a source is conditionally tracked or when a higher-order tracked source emits a new inner-source or stops.
+   *
+   * This method will also skip the emission if the result is SKIP or STOP. In case of STOP, the observation
+   * is stopped. This allows expressions to control flow of the observation in an imparative manner.
+   *
+   * @param {ExprResultSync<T>} res the result to emit
+   */
   protected override emit(res: ExprResultSync<T>) {
     // emission means last run is finished,
     // so sync tokens should be synced.
@@ -153,6 +167,13 @@ export class Observation<T> extends Source<T> {
     }
   }
 
+  /**
+   * Tracks a source and returns the latest value emitted by it. If the source is being tracked for the first time,
+   * will register a listener with it to re-run the expression when it emits.
+   *
+   * @returns The latest value emitted by the source, or undefined if there was a subsequent run after the run
+   * that initiated the tracking (so expression can realize mid-flight if they are aborted).
+   */
   protected track<U>(src: SourceLike<U>, syncToken: number) {
     if (syncToken !== this.syncToken) {
       return undefined
@@ -173,6 +194,10 @@ export class Observation<T> extends Source<T> {
     }
   }
 
+  /**
+   * Removes a source from the tracked sources. If this was the last tracked source,
+   * the observation is stopped.
+   */
   protected checkStop(src: SourceLike<unknown>) {
     this.tracked.delete(src)
     if (this.tracked.size === 0) {

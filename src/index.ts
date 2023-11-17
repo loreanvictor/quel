@@ -8,4 +8,5 @@ export * from './event'
 export * from './input'
 export * from './from'
 export * from './types'
+export * from './disposable'
 
