@@ -98,6 +98,7 @@ observe($ => {
   - [Iteration](#iteration)
   - [Cleanup](#cleanup)
   - [Typing](#typing)
+  - [Custom Sources](#custom-sources)
 - [Features](#features)
 - [Related Work](#related-work)
 - [Contribution](#contribution)
@@ -149,15 +150,6 @@ const click = from(document.querySelector('button'))
 const hover = from(document.querySelector('button'), 'hover')
 const input = from(document.querySelector('input'))
 ```
-Create a custom source:
-```js
-import { Source } from 'quel'
-
-const src = new Source(async emit => {
-  await sleep(1000)
-  emit('Hellow World!')
-})
-```
 Read latest value of a source:
 ```js
 src.get()
@@ -170,6 +162,8 @@ Wait for a source to be stopped:
 ```js
 await src.stops()
 ```
+
+<br>
 
 > In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you can safely
 > subscribe to a source:
@@ -338,52 +332,32 @@ for await (const i of iterate(timer)) {
 
 </div>
 
-<br>
-
 ## Cleanup
 
-Expressions cleanup automatically when all their tracked sources are stopped. They also lazy-check if all previously tracked sources
-are still being tracked when they emit (or they stop) to do proper cleanup.
-
-You need to manually clean up sources:
+You need to manually clean up sources you create:
 
 ```js
 const timer = new Timer(1000)
-const effect = observe($ => console.log($(timer)))
 
-// 👇 this stops the timer and the effect
+// ... whatever ...
+
 timer.stop()
-
-// 👇 this just stops the side-effect, the timer keeps going.
-effect.stop()
 ```
 
-Custom sources can return a cleanup function:
+Observations cleanup automatically when all their tracked sources
+stop. YOU DONT NEED TO CLEANUP OBSERVATIONS.
+
+If you want to stop an observation earlier, call `stop()` on it:
+
 ```js
-const myTimer = new Source(emit => {
-  let i = 0
-  const interval = setInterval(() => emit(++i), 1000)
-  
-  // 👇 clear the interval when the source is stopped
-  return () => clearInterval(interval)
-})
-```
-Or use a callback to register the cleanup code:
-```js
-// 👇 with async producers, use a callback to specify cleanup code
-const asyncTimer = new Source(async (emit, finalize) => {
-  let i = 0
-  let stopped = false
-  
-  finalize(() => stopped = true)
-  
-  while (!stopped) {
-    emit(++i)
-    await sleep(1000)
-  }
-})
+const obs = observe($ => $(src))
+
+// ... whatever ...
+
+obs.stop()
 ```
 
+<br>
 
 > In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you can safely
 > create sources without manually cleaning them up:
@@ -408,6 +382,80 @@ const expr = ($: Track) => $(a) * 2
 👉 [Check this](src/types.ts) for more useful types.
 
 <br>
+
+## Custom Sources
+
+Create your own sources using `Source` class:
+
+```js
+const src = new Source(async emit => {
+  await sleep(1000)
+  emit('Hellow World!')
+})
+```
+
+If cleanup is needed, and your producer is sync, return a cleanup function:
+```js
+const myTimer = new Source(emit => {
+  let i = 0
+  const interval = setInterval(() => emit(++i), 1000)
+  
+  // 👇 clear the interval when the source is stopped
+  return () => clearInterval(interval)
+})
+```
+
+If your producer is async, register the cleanup using `finalize` callback:
+```js
+// 👇 with async producers, use a callback to specify cleanup code
+const asyncTimer = new Source(async (emit, finalize) => {
+  let i = 0
+  let stopped = false
+  
+  finalize(() => stopped = true)
+  
+  while (!stopped) {
+    emit(++i)
+    await sleep(1000)
+  }
+})
+```
+
+You can also extend the `Source` class:
+
+```js
+class MyTimer extends Source {
+  constructor(rate = 200) {
+    super()
+    this.rate = rate
+    this.count = 0
+  }
+  
+  toggle() {
+    if (this.interval) {
+      this.interval = clearInterval(this.interval)
+    } else {
+      this.interval = setInterval(
+        // call this.emit() to emit values
+        () => this.emit(++this.count),
+        this.rate
+      )
+    }
+  }
+  
+  // override stop() to clean up
+  stop() {
+    clearInterval(this.interval)
+    super.stop()
+  }
+}
+```
+
+<div align="right">
+
+[**▷ TRY IT**](https://codepen.io/lorean_victor/pen/WNPdBdx?editors=0011)
+
+</div>
 
 # Features
 
