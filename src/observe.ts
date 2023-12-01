@@ -1,4 +1,4 @@
-import { Listener, SourceLike, isSourceLike, Observable, ExprFn, SKIP, STOP, ExprResultSync } from './types'
+import { Listener, SourceLike, isSourceLike, Observable, ExprFn, SKIP, STOP, ExprResultSync, isPure } from './types'
 import { Source } from './source'
 
 
@@ -39,6 +39,7 @@ function normalize<T>(fn: Observable<T>): SourceLike<T> {
  * ```
  */
 export class Observation<T> extends Source<T> {
+  ctrl: AbortController | undefined
   /**
    * A mapping of all tracked sources. For receiving the values of tracked sources,
    * a handler is registered with them. This handler is stored in this map for cleanup.
@@ -111,6 +112,7 @@ export class Observation<T> extends Source<T> {
     if (this.syncToken > 0) {
       // check if there is an unfinished run that needs to be aborted
       if (this.lastSyncToken !== this.syncToken) {
+        this.ctrl?.abort()
         this.abort && this.abort()
       }
       // if this is a higher-order observation, the last emitted source
@@ -130,7 +132,8 @@ export class Observation<T> extends Source<T> {
     this.cleanCandidate = src
     const syncToken = this.nextToken()
 
-    const _res = this.fn(obs => obs ? this.track(normalize(obs), syncToken) : undefined)
+    // const _res = this.fn(obs => obs ? this.track(normalize(obs), syncToken) : undefined)
+    const _res = this.execute(syncToken)
 
     if (_res instanceof Promise) {
       _res.then(res => {
@@ -142,6 +145,23 @@ export class Observation<T> extends Source<T> {
       })
     } else {
       this.emit(_res)
+    }
+  }
+
+  /**
+   * Executes the expression with given sync token. If the expression is abortable, will
+   * create a new AbortController and pass its signal to the expression.
+   * @param syncToken the token to check if the execution should be aborted
+   * @returns the result of the expression (sync or async)
+   */
+  protected execute(syncToken: number) {
+    if (isPure(this.fn)) {
+      return this.fn(obs => obs ? this.track(normalize(obs), syncToken) : undefined)
+    } else {
+      this.ctrl = new AbortController()
+      const signal = this.ctrl.signal
+
+      return this.fn(obs => obs ? this.track(normalize(obs), syncToken) : undefined, signal)
     }
   }
 
