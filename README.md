@@ -16,7 +16,7 @@ _Reactive Expressions for JavaScript_
 npm i quel
 ```
 
-**quel** is a tiny library for reactive programming in JavaScript. You can use it to write applications that react to user interactions, events, timers, web sockets, etc. using plain JavaScript expressions and functions.
+**quel** is a tiny library for reactive programming in JavaScript. Use it to write applications that handle user interactions, events, timers, web sockets, etc. using only simple functions.
 
 ```js
 import { from, observe } from 'quel'
@@ -24,14 +24,14 @@ import { from, observe } from 'quel'
 
 const div$ = document.querySelector('div')
 
-// 👇 this is a source of change, as value of the input changes
+// 👇 encapsulate the value of the input
 const input = from(document.querySelector('textarea'))
 
-// 👇 these are computed values based on that source
+// 👇 compute some other values based on that (changing) value
 const chars = $ => $(input)?.length ?? 0
 const words = $ => $(input)?.split(' ').length ?? 0
 
-// 👇 this is a side effect executed when the computed values change
+// 👇 use the calculated value in a side-effect
 observe($ => div$.textContent = `${$(chars)} chars, ${$(words)} words`)
 ```
 
@@ -43,8 +43,8 @@ observe($ => div$.textContent = `${$(chars)} chars, ${$(words)} words`)
 
 <br>
 
-**quel** focuses on simplicity and composability. Even for more complex use cases (such as higher-order reactive sources, bouncing events, etc.)
-it relies on native JavaScript features such async functions and combination, instead of operators, hooks, or other custom abstractions.
+**quel** focuses on simplicity and composability. Even complex scenarios (such as higher-order reactive sources, debouncing events, etc.)
+are implemented with plain JS functions combined with each other (instead of operators, hooks, or other custom abstractions).
 
 ```js
 //
@@ -60,9 +60,11 @@ const input = from(document.querySelector('input'))
 const rate = $ => parseInt($(input) ?? 100)
 
 //
-// 👇 as the rate of the timer changes, so does the timer itself.
-//    with a constant rate, the timer would be a simple source of change,
-//    with changing rates, the timer becomes a "higher-order" source.
+// 👇 wait a little bit after the input value is changed (debounce),
+//    then create a new timer with the new rate.
+//
+//    `timer` is a "higher-order" source of change, because
+//    its rate also changes based on the value of the input.
 //
 const timer = async $ => {
   await sleep(200)
@@ -120,29 +122,44 @@ import { from, observe } from 'https://esm.sh/quel'
 
 # Usage
 
-Working with [**quel**](.) involves four steps:
 1. Encapsulate (or create) [sources of change](#sources),
-2. Process and combine the these changing values using [functions & expressions](#expressions),
+  ```js
+  const timer = new Timer(1000)
+  const input = from(document.querySelector('#my-input'))
+  ```
+2. Process and combine these changing values using [simple functions](#expressions),
+  ```js
+  const chars = $ => $(input).length
+  ```
 3. [Observe](#observation) these changing values and react to them
    (or [iterate](#iteration) over them),
+  ```js
+  const obs = observe($ => console.log($(timer) + ' : ' + $(chars)))
+  ```  
 4. [Clean up](#cleanup) the sources, releasing resources (e.g. stop a timer, remove an event listener, cloe a socket, etc.).
+  ```js
+  obs.stop()
+  timer.stop()
+  ```
+
+<br>
 
 ## Sources
 
-Create a subject (whose value you can manually set at any time):
+📝 Create a subject (whose value you can manually set at any time):
 ```js
 import { Subject } from 'quel'
 
 const a = new Subject()
 a.set(2)
 ```
-Create a timer:
+🕑 Create a timer:
 ```js
 import { Timer } from 'quel'
 
 const timer = new Timer(1000)
 ```
-Create an event source:
+⌨️ Create an event source:
 ```js
 import { from } from 'quel'
 
@@ -150,22 +167,22 @@ const click = from(document.querySelector('button'))
 const hover = from(document.querySelector('button'), 'hover')
 const input = from(document.querySelector('input'))
 ```
-Read latest value of a source:
+👀 Read latest value of a source:
 ```js
 src.get()
 ```
-Stop a source:
+✋ Stop a source:
 ```js
 src.stop()
 ```
-Wait for a source to be stopped:
+💁‍♂️ Wait for a source to be stopped:
 ```js
 await src.stops()
 ```
 
 <br>
 
-> In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you can safely
+> In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you can
 > subscribe to a source:
 > ```js
 > using sub = src.subscribe(value => ...)
@@ -176,19 +193,21 @@ await src.stops()
 
 ## Expressions
 
-Combine two sources using simple _expression_ functions:
+⛓️ Combine two sources using simple _expression_ functions:
 ```js
 const sum = $ => $(a) + $(b)
 ```
-Filter values:
+🔍 Filter values:
 ```js
 import { SKIP } from 'quel'
 
 const odd = $ => $(a) % 2 === 0 ? SKIP : $(a)
 ```
-Expressions can be async:
+🔃 Expressions can be async:
 ```js
 const response = async $ => {
+  // a debounce to avoid overwhelming the
+  // server with requests.
   await sleep(200)
   
   if ($(query)) {
@@ -210,12 +229,12 @@ const response = async $ => {
 
 </div>
 
-Flatten higher-order sources:
+🫳 Flatten higher-order sources:
 ```js
 const variableTimer = $ => new Timer($(input))
 const message = $ => 'elapsed: ' + $($(timer))
 ```
-Stop the expression:
+✋ Stop the expression:
 ```js
 import { STOP } from 'quel'
 
@@ -232,8 +251,8 @@ const take5 = $ => {
 > ℹ️ **IMPORTANT**
 >
 > The `$` function, passed to expressions, _tracks_ and returns the latest value of a given source. Expressions
-> are then re-evaluated every time a change in some tracked source results in some new value.
-> This means that the sources you track must remain the same when the expression is re-evaluated.
+> are then re-run every time a tracked source has a new value. Make sure you track the same sources everytime
+> the expression runs.
 >
 > **DO NOT** create sources you want to track inside an expression:
 > 
@@ -271,18 +290,35 @@ const take5 = $ => {
 
 ## Observation
 
-Run side effects:
+🚀 Run side effects:
 ```js
 import { observe } from 'quel'
 
 observe($ => console.log($(message)))
 ```
 
-Observations are sources themselves:
+💡 Observations are sources themselves:
 ```js
 const y = observe($ => $(x) * 2)
 console.log(y.get())
 ```
+
+✋ Don't forget to stop observations:
+
+```js
+const obs = observe($ => ...)
+obs.stop()
+```
+
+<br>
+
+> In runtimes supporting `using` keyword ([see proposal](https://github.com/tc39/proposal-explicit-resource-management)), you don't need to manually stop observations:
+> ```js
+> using obs = observe($ => ...)
+> ```
+> Currently [TypeScript 5.2](https://devblogs.microsoft.com/typescript/announcing-typescript-5-2-beta/#using-declarations-and-explicit-resource-management) or later supports `using` keyword.
+
+<br>
 
 Async expressions might get aborted mid-execution. You can handle those events by passing a second argument to `observe()`:
 ```js
@@ -334,7 +370,7 @@ for await (const i of iterate(timer)) {
 
 ## Cleanup
 
-You need to manually clean up sources you create:
+🧹 You need to manually clean up sources you create:
 
 ```js
 const timer = new Timer(1000)
@@ -344,7 +380,7 @@ const timer = new Timer(1000)
 timer.stop()
 ```
 
-Observations cleanup automatically when all their tracked sources
+✨ Observations cleanup automatically when all their tracked sources
 stop. YOU DONT NEED TO CLEANUP OBSERVATIONS.
 
 If you want to stop an observation earlier, call `stop()` on it:
