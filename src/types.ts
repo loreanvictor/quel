@@ -27,5 +27,12 @@ export const STOP = Symbol()
 export type ExprResultSync<T> = T | typeof SKIP | typeof STOP
 export type ExprResult<T> = ExprResultSync<T> | Promise<ExprResultSync<T>>
 export type Track = <T>(obs: Observable<T>) => T | undefined
-export type ExprFn<T> = (track: Track) => ExprResult<T>
+export type PureExprFn<T> = (track: Track) => ExprResult<T>
+export type AbortableExprFn<T> = (track: Track, signal: AbortSignal) => ExprResult<T>
+export type ExprFn<T> = PureExprFn<T> | AbortableExprFn<T>
+
+export function isPure<T>(fn: ExprFn<T>): fn is PureExprFn<T> {
+  return fn.length === 1
+}
+
 export type Observable<T> = SourceLike<T> | ExprFn<T>
